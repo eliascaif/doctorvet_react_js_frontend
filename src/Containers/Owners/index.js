@@ -102,6 +102,21 @@ const Owners = (porps) => {
         });
     }
 
+    const updatePets = (owner) => {
+        let ownersAux = owners.map((ownerData) => {
+            if(owner.id===ownerData.id){
+                return owner;
+            }
+            return ownerData;
+        });
+        setOwners(ownersAux);
+        console.log(owner);
+    }
+
+    const onDelete = () => {
+        updateOwners(false);
+    }
+
     return (
         <div className='owners-wrapper'>
             {
@@ -118,8 +133,10 @@ const Owners = (porps) => {
                             races={races}
                             characteres={characteres}
                             sexes={sexes}
-                            onChange={updateOwners}
+                            onChange={updatePets}
+                            onDelete={onDelete}
                             open={open}
+                            regions={regions}
                         />
                     )
                 })

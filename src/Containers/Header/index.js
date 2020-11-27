@@ -12,6 +12,8 @@ const Header = (props) => {
                 //pathname={props.pathname}
                 onClick={props.handleOption}
                 user={props.user}
+                openVetDetail = {props.openVetDetail}
+                openOwnerDetail = {props.openOwnerDetail}
             />
             <span>{props.option}</span>
         </div>

@@ -1,44 +1,47 @@
-import React, { useEffect, useState } from 'react';
+import React, {useState, useEffect} from 'react';
 import Drawer from '../../Components/Drawer';
-import {GetRace, GetFur, GetSex, GetCharacter} from '../../Services/Pet';
-import {AddPet as AddService} from '../../Services/Pet';
-import {GetOwners} from '../../Services/Owner';
-import {useHistory} from 'react-router-dom';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import BackupIcon from '@material-ui/icons/Backup';
 import dog from '../../Assets/img/dog-blue.svg';
-import {
-  CircularProgress,
-  TextField,
-  Checkbox,
-  Select,
-  FormControl,
-  InputLabel
-} from '@material-ui/core';
 import ViewHeadlineIcon from '@material-ui/icons/ViewHeadline';
 
 import {
-  KeyboardDatePicker,
-} from '@material-ui/pickers';
+    CircularProgress,
+    TextField,
+    Checkbox,
+    Select,
+    FormControl,
+    InputLabel
+  } from '@material-ui/core';
+
+  import {
+    KeyboardDatePicker,
+  } from '@material-ui/pickers';
 
 import './styles.scss';
 
+import {UpdatePet} from '../../Services/Pet';
+
 const TextFieldStyles = {
-  marginBottom:'1em',
-  width:'100%'
+    marginBottom:'1em',
+    width:'100%'
 }
 
-const AddPet = (props) => {
-    const history = useHistory();
-    //const [open, setOpen] = useState(false);
+function formatDate(date) {
+    var d = new Date(date),
+        month = '' + (d.getMonth() + 1),
+        day = '' + d.getDate(),
+        year = d.getFullYear();
 
-    const [sesion, setSesion] = useState(null);
-    const [races, setRaces] = useState(null);
-    const [furs, setFurs] = useState(null);
-    const [sexes, setSexes] = useState(null);
-    const [characteres, setCaracteres] = useState(null);
-    const [fetching, setFetching] = useState(false);
-    const [owners, setOwners] = useState(null);
+    if (month.length < 2) 
+        month = '0' + month;
+    if (day.length < 2) 
+        day = '0' + day;
+
+    return [year, month, day].join('-');
+}
+
+const EditPet = (props) => {
 
     const [data, setData] = useState({
         chip:null,
@@ -58,95 +61,17 @@ const AddPet = (props) => {
         date:null
     });
 
+    const [fetching, setFetching] = useState(false);
+
     useEffect(()=>{
-        let localSesion = null;
-        try {
-            localSesion = JSON.parse(localStorage.getItem('sesion'));
-        } catch (error) {
-            localStorage.setItem('sesion', null);
-        }
-        if(localSesion===null){
-            history.push('/');
-            return;
-        }
-        if(localSesion.access_token!==undefined){
-            setSesion(localSesion);
-            GetRace(localSesion.access_token,(data)=>{
-                //console.log('razas', data)
-                setRaces(data);
-            });
-
-            GetFur(localSesion.access_token,(data)=>{
-                //console.log('fur', data)
-                setFurs(data);
-            });
-    
-            GetSex(localSesion.access_token,(data)=>{
-                //console.log('sex', data)
-                setSexes(data);
-            });
-    
-            GetCharacter(localSesion.access_token,(data)=>{
-                //console.log('char', data)
-                setCaracteres(data);
-            });
-
-            GetOwners(localSesion.access_token, localSesion.x_usuarios_veterinarias.id_veterinaria, (data)=>{
-                //console.log(data)
-                setFetching(false);
-                setOwners(data);
-            });
-
-            setData({...data, id_veterinaria: localSesion.veterinary.id});
-            
-        }
-
-    },[])
-
-    const add = () => {
-        console.log(data);
-        if(!fetching && /*data.chip!=='' && data.id_caracter!=='' && data.id_pelaje!=='' && data.id_raza!=='' && data.id_sexo!=='' && data.nacimiento!=='' && */data.nombre!=='' && data.id_propietario!==''/*&& data.notas!=='' && data.peso!=='' && data.id_veterinaria!=='' && data.id_propietario!==''*/){
-          setFetching(true);
-          AddService(sesion.access_token, data, 
-            (resp)=>{
-                console.log(resp);
-                setFetching(false);
-//              setNewPetOpen(!newPetOpen);
-                setData({
-                    ...data,
-                    chip:null,
-                    id_caracter:null,
-                    id_pelaje:null,
-                    id_raza:null,
-                    id_sexo:null,
-                    nacimiento:null,
-                    nombre:'',
-                    notas:null,
-                    peso:null,
-                    thumb:0,
-                    es_principal:1,
-                    id_propietario:'',
-                    deceso:false,
-                    date:null
-                });
-                props.updatePets(resp);
-            },
-            (error)=>{
-              setFetching(false);
-            }
-          );
-        }
-        else{
-          console.log(data)
-        }
-    }
+        setData({...props.data, id_veterinaria:props.sesion.veterinary.id});
+    },[]);
 
     const handleData = (event) => {
         let value = event.target.value;
         let name = event.target.name;
         //console.log(name, value)
         setData({...data, [name]:value});
-    
     }
     
     const handleDate = (date) => {
@@ -160,73 +85,52 @@ const AddPet = (props) => {
         //console.log(name, value)
         setData({...data, [name]:value});
     }
-    
-    function formatDate(date) {
-        var d = new Date(date),
-            month = '' + (d.getMonth() + 1),
-            day = '' + d.getDate(),
-            year = d.getFullYear();
-    
-        if (month.length < 2) 
-            month = '0' + month;
-        if (day.length < 2) 
-            day = '0' + day;
-    
-        return [year, month, day].join('-');
+
+    const handleUpdate = () => {
+        console.log(props.data);
+        setFetching(true)
+        UpdatePet(props.sesion.access_token, data, (resp)=>{
+            //console.log(resp);
+            props.onUpdate(resp);
+            setFetching(false);
+        },
+        (error)=>{
+            console.error(error);
+            setFetching(false);
+        });
     }
 
     return (
-        <div className='addpet-wrapper'>
-            <Drawer
-                open={props.open}
-                className={'add-pet-container'}
-            >
-                <div className='new-pet-header header'>
-                    <div className='header-title'>
-                    <span onClick={props.onClose} className='close-btn'>
-                        <ArrowBackIcon/>
-                    </span>
-                    <span className='dog-img'><img src={dog} alt='dog' style={{width:'100%'}}/></span>
-                    <span style={{marginLeft:'1em'}}>
-                        <span className='pet-header-title'>Nueva mascota</span>
-                        <span className='pet-header-subtitle'>Ingresando nueva mascota</span>
-                    </span>
-                    </div>
-                    <span className='add-pet-btn' onClick={add}>
-                        <BackupIcon/>
-                    </span>
+        <Drawer
+            open={props.open}
+            anchor='bottom'
+            className='edit-pet-wrapper'
+        >
+            
+            <div className='new-pet-header header'>
+                <div className='header-title'>
+                <span onClick={props.onClose} className='close-btn'>
+                    <ArrowBackIcon/>
+                </span>
+                <span className='dog-img'><img src={dog} alt='dog' style={{width:'100%'}}/></span>
+                <span style={{marginLeft:'1em'}}>
+                    <span className='pet-header-title'>{props.data.nombre}</span>
+                    <span className='pet-header-subtitle'>Editando mascota</span>
+                </span>
                 </div>
-                {races!==null && furs!==null && sexes!==null && characteres!==null && owners!==null && !fetching?
+                <span className='add-pet-btn' onClick={handleUpdate}>
+                    <BackupIcon/>
+                </span>
+            </div>
+            <div>
+                {(props.races!==null && props.furs!==null && props.characteres!==null && props.sexes!==null && !fetching) ?
                 <span className='add-pet-form'>
-                    
-                    <FormControl style={{width:'100%'}}>
-                        <InputLabel htmlFor="race">Propietario</InputLabel>
-                        <Select
-                            native
-                            //value={state.age}
-                            onChange={handleData}
-                            inputProps={{
-                            name: 'id_propietario',
-                            id: 'id_propietario_newpet',
-                            }}
-                            style={TextFieldStyles}
-                            value={data.id_propietario}
-                        >
-                            <option value="" />
-                            {
-                            owners.map(data=>{
-                                return <option key={data.id} value={data.id}>{data.nombre}</option>
-                            })
-                            }
-                        </Select>
-                    </FormControl>
-
                     <TextField 
-                    label='Nombre'
-                    name='nombre'
-                    style={TextFieldStyles}
-                    onChange={handleData}
-                    value={data.nombre}
+                        label='Nombre'
+                        name='nombre'
+                        style={TextFieldStyles}
+                        onChange={handleData}
+                        value={data.nombre}
                     />
 
                     <FormControl style={{width:'100%'}}>
@@ -244,7 +148,7 @@ const AddPet = (props) => {
                         >
                             <option value="" />
                             {
-                            races.map(data=>{
+                            props.races.map(data=>{
                                 return <option key={data.id} value={data.id}>{data.nombre}</option>
                             })
                             }
@@ -266,7 +170,7 @@ const AddPet = (props) => {
                     >
                         <option value="" />
                         {
-                        furs.map(data=>{
+                        props.furs.map(data=>{
                             return <option key={data.id} value={data.id}>{data.nombre}</option>
                         })
                         }
@@ -288,7 +192,7 @@ const AddPet = (props) => {
                     >
                         <option value="" />
                         {
-                        sexes.map(data=>{
+                        props.sexes.map(data=>{
                             return <option key={data.id} value={data.id}>{data.nombre}</option>
                         })
                         }
@@ -310,7 +214,7 @@ const AddPet = (props) => {
                     >
                         <option value="" />
                         {
-                        characteres.map(data=>{
+                        props.characteres.map(data=>{
                             return <option key={data.id} value={data.id}>{data.nombre}</option>
                         })
                         }
@@ -368,8 +272,9 @@ const AddPet = (props) => {
                         <CircularProgress/>
                     </span>
                 }
-            </Drawer>
-        </div>
+            </div>
+        </Drawer>
     )
 }
-export default AddPet;
+
+export default EditPet;

@@ -23,6 +23,8 @@ import './styles.scss';
 import {GetVeterinaries, JoinVet, CreateVet} from '../../Services/Veterinary';
 import {GetRegions} from '../../Services/Regions';
 
+import {validateEmail} from '../../Validator';
+
 const TextFieldStyles = {
     marginBottom:'1em',
     width:'100%'
@@ -52,18 +54,25 @@ const SetVeterinary = (props) => {
     const [option, setOption] = useState(null);
     const [regions, setRegions] = useState([]);
     const [open, setOpen] = useState(false);
+    const [fetching, setFetching] = useState(false);
     const [data, setData] = useState({
-        direccion: '',
+        direccion: null,
         email: '',
-        id_region: '',
+        id_region: null,
         nombre: '',
-        nombre_region: '',
-        notas: '',
-        pagina_web: '',
-        propietario: '',
-        telefono: '',
+        nombre_region: null,
+        notas: null,
+        pagina_web: null,
+        propietario: null,
+        telefono: null,
         thumb: 0
     })
+    const [error, setError] = useState({
+        email:false,
+    });
+    const [status, setStatus] = useState(false);
+    const [checked, setChecked] = useState(false);
+    const [vetAux, setVetAux] = useState(null);
 
     useEffect(()=>{
         let localSesion = null;
@@ -104,19 +113,48 @@ const SetVeterinary = (props) => {
         }
     },[]);
 
+    const handleClose = () => {
+        setOpen(false);
+    }
+
     const handleVet = (d) => {
-        setVet(d.id);
+        setVetAux(d.id);
         setOpen(true);
     }
 
     const handleJoinVet = () => {
+        setChecked(true);
+        setOpen(false);
+        setFetching(true);
+        setVet(vetAux);
+        console.log(vetAux)
         JoinVet(
-            {id_usuario:sesion.id, id_veterinaria:vet},
+            {id_usuario:sesion.id, id_veterinaria:vetAux},
             sesion.access_token,
             (data)=>{
-                console.log(data);
+                console.log('join response',data);
+                setFetching(false);
             }
         );
+    }
+
+    const handleLogin = () => {
+        /*LoginService({...userData, tipo_login:'EMAIL'}, (data) => {
+            console.log(data);
+            //if(data.usuario.id_x_usuarios_veterinarias_en_uso!==null)
+            if(data.response==='ACCOUNT_WAITING_FOR_EMAIL_CHECK'){
+                return;
+            }
+            //localStorage.setItem('sesion', JSON.stringify(data.usuario));
+            //history.push('/dashboard');
+        },
+        (error)=>{
+            console.error('login',error);
+            setErrorMessage({status:true, message:error});
+            setDisabled(false);
+        });*/
+        console.log('pushing to dashboard app');
+        history.push('/dashboard');
     }
 
     const handleOption = (data) => {
@@ -124,20 +162,35 @@ const SetVeterinary = (props) => {
     }
 
     const handleAddVet = () => {
-        CreateVet(
-            data, 
-            sesion.id,
-            sesion.access_token,
-            (data)=>{
-                console.log(data);
-            }
-        )
+        console.log(!validateEmail(data.email))
+        setError({...error, email:!validateEmail(data.email)});
+        if(fetching || status)
+            return;
+        setFetching(true);
+        if(validateEmail(data.email) && data.email!=='' && data.nombre!=='' && !status){
+            CreateVet(
+                data, 
+                sesion.id,
+                sesion.access_token,
+                (data)=>{
+                    console.log('response ',data);
+                    if(/^[0-9]*/.test(data)){
+                        setStatus(true);
+                        localStorage.setItem('sesion',JSON.stringify({...JSON.parse(localStorage.getItem('sesion')), id_x_usuarios_veterinarias_en_uso: data, x_usuarios_veterinarias:{id_veterinaria:data}}));
+                        handleLogin();
+                    }
+                    setFetching(false);
+                }
+            );
+        }
     }
-
+/*buenas noches elias como estas, estoy trabajando en el frlujo de un usuario sin veterinaria asociada.
+mañana en la tarde podemos conversar sobre los datos de sesion.
+pero te comento para que madures la idea y mañana me des tu opinion, en la app web a diferencia de la app movil es mucho mas facil acceder a los datos de la sesion asi esten encriptados, y tambien el codigo JS de decifrado se encuentra accesible a los usarios desde el navegador, asi que cualquier sesion puede ser vista por cualquiera con conocimiento de que eso esta allí, entonces no se si quieres seguir manejando las mismas politicas para las sesiones que la app movil o quisieras hacer alguna modificacion  */
     const handleData = (event) => {
         let value = event.target.value;
         let name = event.target.name;
-        console.log(data)
+        //console.log(data)
         if(name==='id_region'){
             let aux = value.split('*vet*');
             setData({...data, id_region:aux[0], nombre_region:aux[1]});
@@ -147,7 +200,7 @@ const SetVeterinary = (props) => {
     }
 
     return (
-        <div>
+        <div className='set-vet-wrapper'>
             {option===null &&
             <div className='select-option'>
                 <Button
@@ -185,28 +238,29 @@ const SetVeterinary = (props) => {
                 </div>
                 <div className='existing-vet'>
                     {
-                        loading 
+                        (loading || fetching)
                         ? 
-                            <CircularProgress/>
+                            <span className='spiner'>
+                                <CircularProgress/>
+                            </span>
                         :
-                            <div></div>
+                        <div style={{width:'100%'}}>
+                            {
+                                vets.map(data => {
+                                    //console.log(data.id,vet,data.id===vet)
+                                    return (
+                                        <Veterinary
+                                            name={data.nombre}
+                                            email={data.email}
+                                            key={data.id}
+                                            active={data.id===vet && checked}
+                                            onClick={()=>handleVet(data)}
+                                        />
+                                    )
+                                })
+                            }
+                        </div>
                     }
-                    <div style={{width:'100%'}}>
-                        {
-                            vets.map(data => {
-                                //console.log(data.id,vet,data.id===vet)
-                                return (
-                                    <Veterinary
-                                        name={data.nombre}
-                                        email={data.email}
-                                        key={data.id}
-                                        active={data.id===vet}
-                                        onClick={()=>handleVet(data)}
-                                    />
-                                )
-                            })
-                        }
-                    </div>
                     {/*<Button
                         variant="contained"
                         style={{width:'calc(100% - 1em)', boxShadow:'none', margin:'1em .5em .5em .5em'}}
@@ -220,7 +274,8 @@ const SetVeterinary = (props) => {
                     open={open}
                     CloseText={'Cancelar'}
                     okText={'Unirse'}
-                    handleClose={()=>{setOpen(false)}}
+                    handleClose={handleClose}
+                    handleOk={handleJoinVet}
                 >
                     <div style={{textAlign:'center'}}>
                         <h3>¿Unirse a veterinaria?</h3>
@@ -234,9 +289,11 @@ const SetVeterinary = (props) => {
             {option===true &&
                 <span>
                 {
-                    loadingRegions
+                    (loadingRegions || fetching)
                     ? 
-                        <CircularProgress/>
+                        <span className='spiner'>
+                            <CircularProgress/>
+                        </span>
                     :
                     <React.Fragment>
                     <div className='login-vet-header'>
@@ -253,6 +310,8 @@ const SetVeterinary = (props) => {
                         </span>
                         <span
                             style={{fontSize:'1.5em'}}
+                            onClick={handleAddVet}
+                            className='pointer'
                         >
                             <BackupIcon
                                 style={{fontSize:'1.5em'}}
@@ -260,14 +319,17 @@ const SetVeterinary = (props) => {
                         </span>
                     </div>
                     <div className='create-vet'>
-                        <TextField 
-                            label="Nombre" 
-                            name='nombre'
-                            style={TextFieldStyles}
-                            value={data.nombre}
-                            onChange={handleData}
-                            /*disabled={disabled}*/
-                        />
+                        <span>
+                            <TextField 
+                                label="Nombre" 
+                                name='nombre'
+                                style={{...TextFieldStyles, marginBottom:'0'}}
+                                value={data.nombre}
+                                onChange={handleData}
+                                /*disabled={disabled}*/
+                            />
+                            {data.nombre==='' && <span style={{color:'#4052b6', fontSize:'.75em'}}>Por favor, completa aqui</span>}
+                        </span>
                         <TextField 
                             label="Dirección" 
                             name='direccion'
@@ -308,14 +370,18 @@ const SetVeterinary = (props) => {
                             onChange={handleData}
                             /*disabled={disabled}*/
                         />
-                        <TextField 
-                            label="Email" 
-                            name='email'
-                            style={TextFieldStyles}
-                            value={data.email}
-                            onChange={handleData}
-                            /*disabled={disabled}*/
-                        />
+                        <span>
+                            <TextField 
+                                label="Email" 
+                                name='email'
+                                style={TextFieldStyles}
+                                value={data.email}
+                                onChange={handleData}
+                                /*disabled={disabled}*/
+                            />
+                            {data.email==='' && <span style={{color:'#4052b6', fontSize:'.75em'}}>Por favor, completa aqui</span>}
+                            {error.email && <span style={{color:'#4052b6', fontSize:'.75em'}}>Por favor, corrige  aqui</span>}
+                        </span>
                         <TextField 
                             label="Propietario" 
                             name='propietario'
@@ -340,14 +406,14 @@ const SetVeterinary = (props) => {
                             onChange={handleData}
                             /*disabled={disabled}*/
                         />
-                        <Button
+                        {/*<Button
                             variant="contained"
                             style={{width:'calc(100% - 1em)', boxShadow:'none', margin:'1em .5em .5em .5em'}}
                             disabled={data.direccion==='' || data.email==='' || data.id_region==='' || data.nombre==='' || data.nombre_region==='' || data.notas==='' || data.pagina_web==='' || data.propietario==='' || data.telefono===''}
                             onClick={handleAddVet}
                         >
                             Aceptar
-                        </Button>
+                        </Button>*/}
                     </div>
                     </React.Fragment>
                 }

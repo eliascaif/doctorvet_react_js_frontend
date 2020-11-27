@@ -30,6 +30,14 @@ const Dahsboard = (props) => {
             history.push('/');
             return;
         }
+        if(localSesion.x_usuarios_veterinarias===undefined){
+            history.push('/set-veterinary');
+            return;
+        }
+        if(localSesion.id_x_usuarios_veterinarias_en_uso===null){
+            history.push('/set-veterinary');
+            return;
+        }
         if(localSesion.access_token!==undefined){
             GetVeterinary( localSesion.x_usuarios_veterinarias.id_veterinaria, localSesion.access_token, (data)=>{
                 //console.log(data);

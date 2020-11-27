@@ -29,6 +29,9 @@ import PersonIcon from '@material-ui/icons/Person';
 
 import DateFnsUtils from '@date-io/date-fns';
 
+import Vet from './Components/Vet';
+import User from './Components/User';
+
 const options = [
   {
     name:'Inicio',
@@ -70,6 +73,8 @@ const App = () => {
 
   const [sesion, setSesion] = useState(null);
   const [option, setOption] = useState('Inicio');
+  const [vetOpen, setOpenVet] = useState(false);
+  const [ownerOpen, setOpenOwner] = useState(false);
 
   useEffect(()=>{
     let localSesion = null;
@@ -87,7 +92,10 @@ const App = () => {
   },[]);
   
   const handleOption = (event) => {
-    setOption(event);
+    if(event!=='logout')
+      setOption(event);
+    if(event==='logout')
+      setOption('inicio');
     if(event==='logout'){
       console.log('app',event)
       localStorage.setItem('sesion',null);
@@ -100,34 +108,44 @@ const App = () => {
     setSesion(newSesion);
   }
 
+  const handleVetOpen = () => {
+    setOpenVet(!vetOpen)
+  }
+
+  const handleOwnerOpen = () => {
+    setOpenOwner(!ownerOpen)
+  }
+
   return (
     <Router basename={'/frontend'}>
       <MuiPickersUtilsProvider utils={DateFnsUtils}>
       <div className="App">
         {
-          sesion!==null &&
+          (sesion!==null && sesion.veterinary!==undefined) &&
           <Header
             user={sesion}
             options={options}
             handleOption={handleOption}
             option = {option.toUpperCase()}
+            openVetDetail = {handleVetOpen}
+            openOwnerDetail = {handleOwnerOpen}
           />
         }
         <span style={{display:'flex'}}>
-        {(sesion!==null && sesion.veterinary!==null)&&
+        {(sesion!==null && sesion.veterinary!==undefined) &&
             <div className='menu-lg'>
               <div className='menu-hader'>
                 <div className='header-item'>
-                  <span className='icon-wrapper'><StoreIcon style={{fontSize:'2.5em', color:'#037e69'}}/></span>
+                  <span onClick={handleVetOpen} className='icon-wrapper pointer'><StoreIcon style={{fontSize:'2.5em', color:'#037e69'}}/></span>
                   <div>
-                  <h4 style={{margin:'0'}}>{sesion.veterinary.nombre}</h4>
+                  <h4 onClick={handleVetOpen} className='pointer' style={{margin:'0'}}>{sesion.veterinary.nombre}</h4>
                   <p style={{margin:'0', fontSize:'.75em'}}>{sesion.veterinary.email}</p>
                   </div>
                 </div>
                 <div className='header-item'>
-                  <span className='icon-wrapper'><PersonIcon style={{fontSize:'2.5em', color:'#037e69'}}/></span>
+                  <span onClick={handleOwnerOpen} className='icon-wrapper pointer'><PersonIcon style={{fontSize:'2.5em', color:'#037e69'}}/></span>
                   <div>
-                  <h4 style={{margin:'0'}}>{sesion.nombre}</h4>
+                  <h4 onClick={handleOwnerOpen} className='pointer' style={{margin:'0'}}>{sesion.nombre}</h4>
                   <p style={{margin:'0', fontSize:'.75em'}}>{sesion.email}</p>
                 </div>
               </div>
@@ -139,6 +157,22 @@ const App = () => {
               </ListItem>
               ))}
             </List>
+            {(sesion!==null && sesion.veterinary!==undefined) &&
+            <React.Fragment>
+              <Vet 
+                open={vetOpen}
+                onClose={handleVetOpen}
+                id={sesion.veterinary.id}
+                name={sesion.veterinary.nombre}
+                token={sesion.access_token}
+              />
+              <User
+                open = {ownerOpen}
+                onClose = {handleOwnerOpen}
+                data = {sesion}
+              />
+            </React.Fragment>
+            }
         </div>
         }
         <Switch>

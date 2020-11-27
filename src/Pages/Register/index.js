@@ -4,6 +4,7 @@ import Dialog from '../../Components/Dialog';
 import {Register as RegisterService} from '../../Services/Register';
 import './styles.scss';
 import {validateEmail} from '../../Validator';
+import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 
 import {
     TextField,  
@@ -114,25 +115,28 @@ const Register = (props) => {
     return (
         <div className='register-wrapper'>
             <section className='user-data'>
-                <TextField 
-                    label='Nombre'
-                    name='nombre'
-                    style={TextFieldStyles}
-                    onChange={handleData}
-                    value={data.nombre}
-                    disabled={disabled}
-                />
-                <span>
+                <span style={{marginBottom:'1em', display:'block'}}>
+                    <TextField 
+                        label='Nombre'
+                        name='nombre'
+                        style={{...TextFieldStyles, marginBottom:'0'}}
+                        onChange={handleData}
+                        value={data.nombre}
+                        disabled={disabled}
+                    />
+                    {data.nombre==='' && <span style={{color:'#4052b6', fontSize:'.75em'}}>Por favor, completa aqui</span>}
+                </span>
+                <span style={{marginBottom:'1em', display:'block'}}>
                     <TextField 
                         label='Email'
                         name='email'
-                        style={TextFieldStyles}
+                        style={{...TextFieldStyles, marginBottom:'0'}}
                         onChange={handleData}
                         value={data.email}
                         error={error.email}
                         disabled={disabled}
                     />
-                    {error.email && <span style={{fontSize:'.75em'}}>Por favor corrige aqui</span>}
+                    {error.email && <span style={{color:'#4052b6', fontSize:'.75em'}}>Por favor corrige aqui</span>}
                 </span>
                 <TextField 
                     label='Contraseña' 
@@ -143,27 +147,36 @@ const Register = (props) => {
                     value={data.password}
                     disabled={disabled}
                 />
-                <TextField 
-                    label='Reescribe contraseña'
-                    name='password_c'
-                    type='password'
-                    style={TextFieldStyles}
-                    error={passwords.password!==passwords.password_c}
-                    onChange={handlePasswords}
-                    disabled={disabled}
-                />
-                
-                <Button 
+                <span>
+                    <TextField 
+                        label='Reescribe contraseña'
+                        name='password_c'
+                        type='password'
+                        style={TextFieldStyles}
+                        error={passwords.password!==passwords.password_c}
+                        onChange={handlePasswords}
+                        disabled={disabled}
+                    />
+                    {(passwords.password!==passwords.password_c) && <span style={{color:'#4052b6', fontSize:'.75em'}}>Las contraseñas no coinciden</span>}
+                </span>
+                {/*<Button 
                     variant='contained' 
                     style={{...TextFieldStyles, boxShadow:'none'}}
                     onClick={handleRegister}
                     disabled={(disabled || passwords.password!==passwords.password_c || error.email || (data.email==='' || data.password==='' || data.nombre==='' || passwords.password_c===''))}
                 >
                     Crear cuenta
-                </Button>
+                </Button>*/}
                 {
                     disabled && <div style={{width:'100%', textAlign:'center', padding:'1em 0'}}><CircularProgress/></div>
                 }
+                <Button 
+                    className='create-btn pointer'  
+                    onClick={handleRegister}
+                    disabled={(disabled || passwords.password!==passwords.password_c || error.email || (data.email==='' || data.password==='' || data.nombre==='' || passwords.password_c===''))}
+                >
+                    <CheckCircleIcon/>
+                </Button>
             </section>
             <Dialog
                 open={open}

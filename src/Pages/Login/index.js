@@ -1,5 +1,5 @@
 import React,{useEffect,useState} from 'react';
-import {Login as LoginService} from '../../Services/Login';
+import {Login as LoginService, LoginFacebookGoogle} from '../../Services/Login';
 import './styles.scss';
 
 import {
@@ -25,6 +25,7 @@ const Login = (props) => {
 
     const [verified, setVerified] = useState(true);
     const [email, setEmail] = useState('');
+    const [sesion, setSesion] = useState(null);
 
     const [userData, setUserData] = useState({
         /*email:'test@email.com',
@@ -38,15 +39,77 @@ const Login = (props) => {
     const componentClicked = (event) => {
         console.log(event);
     }
+
     const responseFacebook = (response) => {
-        console.log(response);
+        setDisabled(true);
+        console.log('Facebook response',response);
+        let data = {email: response.email, nombre: response.name, tipo_login: 'FACEBOOK', unique_id: response.id}
+        LoginFacebookGoogle(data, (resp) => {
+            console.log(resp);
+
+            if(resp.response==='ACCOUNT_WAITING_FOR_EMAIL_CHECK'){
+                setVerified(false);
+                setEmail(resp.email);
+                return;
+            }
+            localStorage.setItem('sesion', JSON.stringify(resp));
+            setSesion(resp);
+            if(props.onChangeSesion){
+                props.onChangeSesion(JSON.stringify(resp));
+            }
+            setDisabled(false);
+            if(resp.id_x_usuarios_veterinarias_en_uso===null){
+                console.log('push to set veterinary')
+                history.push('/set-veterinary');
+            }
+            else
+                history.push('/dashboard');
+
+        },
+        (error) => {
+            setDisabled(false);
+            console.error(error);
+        });
     }
+    
     const responseGoogle = (response) => {
-        console.log(response);
+        console.log('Google response',response.profileObj);
+        setDisabled(true);
+        if(response.profileObj!==undefined){
+            let data = {email: response.profileObj.email, nombre: response.profileObj.name, tipo_login: 'GOOGLE', unique_id: response.profileObj.googleId};
+            console.log(data);
+            LoginFacebookGoogle(data, (resp) => {
+                console.log(resp);
+
+                if(resp.response==='ACCOUNT_WAITING_FOR_EMAIL_CHECK'){
+                    setVerified(false);
+                    setEmail(resp.email);
+                    return;
+                }
+                localStorage.setItem('sesion', JSON.stringify(resp));
+                setSesion(resp);
+                if(props.onChangeSesion){
+                    props.onChangeSesion(JSON.stringify(resp));
+                }
+                setDisabled(false);
+                if(resp.id_x_usuarios_veterinarias_en_uso===null){
+                    console.log('push to set veterinary')
+                    history.push('/set-veterinary');
+                }
+                else
+                    history.push('/dashboard');
+
+            },
+            (error) => {
+                setDisabled(false);
+                console.error(error);
+            });
+        }
     }
 
     useEffect(()=>{
-        localStorage.setItem('sesion',null);
+        /*console.log('effect')
+        localStorage.setItem('sesion',null);*/
     },[])
 
     const handleData = (event) => {
@@ -60,7 +123,7 @@ const Login = (props) => {
     const handleLogin = () => {
         setDisabled(true);
         LoginService({...userData, tipo_login:'EMAIL'}, (data) => {
-            //console.log(data);
+            console.log(data);
             //if(data.usuario.id_x_usuarios_veterinarias_en_uso!==null)
             if(data.response==='ACCOUNT_WAITING_FOR_EMAIL_CHECK'){
                 setVerified(false);
@@ -68,12 +131,14 @@ const Login = (props) => {
                 return;
             }
             localStorage.setItem('sesion', JSON.stringify(data.usuario));
+            setSesion(data.usuario);
             if(props.onChangeSesion){
                 props.onChangeSesion(JSON.stringify(data.usuario));
             }
             setDisabled(false);
-            if(data.usuario.id_x_usuarios_veterinarias_en_uso===null)
+            if(data.usuario.id_x_usuarios_veterinarias_en_uso===null){
                 history.push('/set-veterinary');
+            }
             else
                 history.push('/dashboard');
         },
@@ -93,8 +158,20 @@ const Login = (props) => {
         setErrorMessage({status:false, message:''});
     }
 
+    const handleRedirect = () => {
+        let localSesion = null;
+        try {
+            localSesion = JSON.parse(localStorage.getItem('sesion'));
+        } catch (error) {
+            localStorage.setItem('sesion', null);
+        }
+        if(localSesion!==null)
+            history.push('/dashboard');
+    }
+
     return (
         <React.Fragment>
+            {handleRedirect()}
             {
                 !verified?
                 <div className='not-verified'>
@@ -159,7 +236,8 @@ const Login = (props) => {
                         <span>O conectate con</span>
                         <div>
                             <GoogleLogin
-                                clientId="148746490734-6dn9077cugm231t1ppgf0mn403ba8hgd.apps.googleusercontent.com"
+                                //clientId="148746490734-6dn9077cugm231t1ppgf0mn403ba8hgd.apps.googleusercontent.com"
+                                clientId="117867739974-u1p6folp269rufct1me8iqo4ahv48kss.apps.googleusercontent.com"
                                 buttonText="Sign in"
                                 onSuccess={responseGoogle}
                                 onFailure={responseGoogle}

@@ -20,7 +20,7 @@ const Drawer = (props) => {
   return (
     
         <React.Fragment>
-          <DrawerUI anchor={'left'} open={props.open} onClose={toggleDrawer('left', false)}>
+          <DrawerUI anchor={props.anchor} open={props.open} onClose={toggleDrawer('left', false)}>
             <div className={'drawer-content '+props.className} style={{width:props.width}}>
               {props.children}
             </div>
@@ -28,4 +28,9 @@ const Drawer = (props) => {
         </React.Fragment>
   );
 }
+
+Drawer.defaultProps = {
+  anchor:'left',
+}
+
 export default Drawer;

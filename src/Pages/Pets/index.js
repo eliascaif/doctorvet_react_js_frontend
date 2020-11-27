@@ -4,7 +4,7 @@ import {
 } from '@material-ui/core';
 import {useHistory} from 'react-router-dom';
 
-import {GetPets} from '../../Services/Pet';
+import {GetPets, GetCharacter, GetFur, GetRace, GetSex} from '../../Services/Pet';
 import './styles.scss';
 import dog from '../../Assets/img/dog-blue.svg';
 import Pet from '../../Components/Pet';
@@ -17,6 +17,13 @@ const Pets = (props) => {
 
     const [sesion, setSesion] = useState(null);
     const [pets, setPets] = useState(null);
+    const [open, setOpen] = useState(false);
+    const [fetching, setFetching] = useState(false);
+
+    const [races, setRaces] = useState(null);
+    const [furs, setFurs] = useState(null);
+    const [sexes, setSexes] = useState(null);
+    const [characteres, setCaracteres] = useState(null);
 
     useEffect(()=>{
         let localSesion = null;
@@ -30,28 +37,89 @@ const Pets = (props) => {
             return;
         }
         if(localSesion.access_token!==undefined){
+            setFetching(true);
             GetPets(localSesion.access_token, localSesion.veterinary.id, (data)=>{
-                console.log(data);
-                setPets(data);
+                let auxData = data.map(n=>{
+                    return {...n, open:false}
+                });
+                console.log(auxData);
+                setPets(auxData);  
+                setFetching(false);
             },
             (error)=>{
+                setFetching(false);
+            });
+            
+            GetRace(localSesion.access_token,(data)=>{
+                //console.log('razas', data)
+                setRaces(data);
+            });
 
-            })
+            GetFur(localSesion.access_token,(data)=>{
+                //console.log('fur', data)
+                setFurs(data);
+            });
+    
+            GetSex(localSesion.access_token,(data)=>{
+                //console.log('sex', data)
+                setSexes(data);
+            });
+    
+            GetCharacter(localSesion.access_token,(data)=>{
+                //console.log('char', data)
+                setCaracteres(data);
+            });
+
             setSesion(localSesion);
         } 
     },[]);
 
     const handleAddPet = () => {
-        
+        setOpen(!open);
+    }
+
+    const handleClose = () => {
+        setOpen(!open);
+    }
+
+    const updatePets = (id) => {
+        setFetching(true);
+        setOpen(false);
+        GetPets(sesion.access_token, sesion.veterinary.id, (data)=>{
+            let auxData = data.map(n=>{
+                if(n.id+''===id) 
+                    return {...n, open:true} 
+                else 
+                    return {...n, open:false}
+            });
+            console.log(auxData);
+            setPets(auxData);  
+            setFetching(false);
+        },
+        (error)=>{
+            setFetching(false);
+        })
+    }
+
+    const UpdatePet = (resp) => {
+        let petAux = pets.map(d=>{
+            //console.log(d, resp)
+            if(d.id+''===resp.id+''){
+                return {...d, ...resp};
+            }
+            return d;
+        });
+        console.log(petAux)
+        setPets(petAux);
     }
 
     return (
         <div className='pets-wrapper' style={{width:'100%'}}>
             {
-                pets===null ? 
-                <span className='circular-progress'>
-                    <CircularProgress/>
-                </span>
+                (pets===null || fetching) ? 
+                    <span className='circular-progress'>
+                        <CircularProgress/>
+                    </span>
                 :
                 <div style={{width:'100%'}}>
                     {
@@ -61,6 +129,15 @@ const Pets = (props) => {
                                     key={data.id} 
                                     ownerName={''}
                                     data={data}
+                                    open={data.open}
+                                    onDelete={updatePets}
+                                    sesion={sesion}
+                                    furs={furs}
+                                    sexes={sexes}
+                                    characteres={characteres}
+                                    races={races}
+                                    sesion={sesion}
+                                    onUpdate={UpdatePet}
                                 >
                                 <div className='pet-list-item'>
                                     <span className='dog-img'><img src={dog} alt='dog' style={{width:'100%'}}/></span>
@@ -86,7 +163,11 @@ const Pets = (props) => {
             <span className='addpet-btn' onClick={handleAddPet}>
                 <AddCircleIcon/>
             </span>
-            <AddPet/>
+            <AddPet
+                open={open}
+                onClose={handleClose}
+                updatePets = {updatePets}
+            />
         </div>
     )
 }

@@ -11,9 +11,15 @@ const Veterinary = (props) => {
                 <p style={{margin:'0', fontSize:'.75em'}}>{props.email}</p>
             </div>
             <div className='radio-button'>
-                <span className={'circle '+(props.active?'circle-active':'')}>
-                    <span className='inner-circle'>
+                {props.active &&
+                    <span style={{display:'flex', flexDirection:'column'}}>
+                        <span>Solicitud</span><span>pendiente</span>
                     </span>
+                }
+                <span className={'circle '+(props.active?'circle-active':'')}>
+                    {!props.active &&<span className='inner-circle'>
+                    </span>}
+                    {props.active && <span style={{color:'#fff'}}>x</span>}
                 </span>
             </div>
         </div>

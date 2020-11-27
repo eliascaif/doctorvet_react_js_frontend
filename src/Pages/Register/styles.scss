@@ -23,6 +23,16 @@ $shadow:0 1px 6px 0 rgba(32, 33, 36, 0.5);
         transform: scaleX(1);
         border-bottom-color: #4052b6;
     }
+    .create-btn{
+        position: fixed;    
+        bottom: .25em;
+        right: .25em;
+    }
+    .create-btn svg {
+        width: 2.5em;
+        height: auto;
+        color: #4052b6;
+    }
 }
 
 /* 

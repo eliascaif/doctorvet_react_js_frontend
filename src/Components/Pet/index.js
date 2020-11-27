@@ -1,6 +1,5 @@
-import React from 'react';
-import Drawer from '@material-ui/core/Drawer';
-//import Button from '@material-ui/core/Button';
+import React, { useEffect, useState } from 'react';
+import Drawer from '../../Components/Drawer';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 
 
@@ -10,9 +9,21 @@ import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
-import Box from '@material-ui/core/Box';
+import PersonIcon from '@material-ui/icons/Person';
+import {
+  Box,
+  CircularProgress,
+  Checkbox,
+} from '@material-ui/core';
 
 import dog from '../../Assets/img/dog-blue.svg';
+import DeleteIcon from '@material-ui/icons/Delete';
+import CreateIcon from '@material-ui/icons/Create';
+import Dialog from '../Dialog';
+
+import {DeletePet} from '../../Services/Pet';
+
+import EditPet from '../../Containers/EditPet';
 
 import './styles.scss';
 
@@ -64,43 +75,89 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Menu(props) {
   const [state, setState] = React.useState({
-    top: false,
-    left: false,
-    bottom: false,
-    right: false,
+    open:false,
+    newPetFlag:true,
   });
-
-  const toggleDrawer = (anchor, open) => (event) => {
-    if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
-      return;
-    }
-
-    setState({ ...state, [anchor]: open });
-  };
 
   const classes = useStyles();
   const [value, setValue] = React.useState(0);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [openEdit, setOpenEdit] =useState(false);
+  const [fetching, setFetching] = useState(false);
+
+  useEffect(()=>{
+    setState({...state, newPetFlag:props.open});
+  },[]);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
 
+  const handleClose = () => {
+    setState({...state, open:false, newPetFlag:false});
+  }
+
+  const handleOpen = () => {
+    setState({...state, open:true})
+  }
+
+  const deletePet = () => {
+    let dataAux = {id_mascota: props.data.id, id_veterinaria: props.sesion.veterinary.id, token: props.sesion.access_token}
+    //console.log(dataAux)
+    setFetching(true);
+    DeletePet(dataAux, (resp)=> {
+      console.log(resp);
+      props.onDelete();
+      setState({...state, open:false});
+      setFetching(false);
+    },
+    (error) => {
+      setFetching(false);
+    });
+  }
+
+  const handleOpenDialog = () => {
+    setOpenDialog(!openDialog);
+  }
+
+  const handleOpenEdit = () => {
+    setOpenEdit(!openEdit);
+  }
+
+  const handleUpdate = (resp) => {
+    props.onUpdate(resp);
+    handleOpenEdit();
+  }
+
   return (
     <div className='pet-wraper'>
       {/*console.log(props.data)*/}
-      <span className='pointer' onClick={toggleDrawer('left', true)}>{props.children}</span>
-      {['left'].map((anchor) => (
-        <React.Fragment key={anchor}>
-          {/*<span style={{cursor:'pointer'}} onClick={toggleDrawer(anchor, true)}>{props.name}</span>*/}
-          <Drawer anchor={anchor} open={state[anchor]} onClose={toggleDrawer(anchor, false)} className='pet-drawer'>
+      <span className='pointer' onClick={handleOpen}>{props.children}</span>
+
+          <Drawer 
+            open={!state.open?(props.open && state.newPetFlag):state.open} 
+            onClose={handleClose} 
+            className='pet-drawer'
+          >
             <div>
               <div className='pet-header'>
-                <ArrowBackIcon style={{color: '#fff', cursor:'pointer'}} onClick={toggleDrawer(anchor, false)}/>
-                <div className='pet-data'>
-                  <span className='dog-img'><img src={dog} alt='dog' style={{width:'100%'}}/></span>
-                  <span style={PetNameStyle}>{props.name}</span>
+                <div>
+                  <ArrowBackIcon style={{color: '#fff', cursor:'pointer'}} onClick={handleClose}/>
+                  <div className='pet-data'>
+                    <span className='dog-img'><img src={dog} alt='dog' style={{width:'100%'}}/></span>
+                    <span style={PetNameStyle}>{props.data.nombre}</span>
+                  </div>
                 </div>
+                {/*<div>
+                  <span><DeleteIcon/></span>
+                </div>*/}
+                
+                <span className='header-crud'>
+                  <span onClick={handleOpenEdit}><CreateIcon/></span>
+                  <span onClick={handleOpenDialog} className='pointer'><DeleteIcon/></span>
+                </span>
               </div>
+
               <div className='pet-info'>
                 <div className={classes.root}>
                   <AppBar position="static">
@@ -111,14 +168,24 @@ export default function Menu(props) {
                     </Tabs>
                   </AppBar>
                   <TabPanel value={value} index={0}>
+                    {!fetching?
                     <div className='pet-info-basic'>
-                      <div className='pet-avatar'>
-                        <span className='dog-img'><img src={dog} alt='dog' style={{width:'100%'}}/></span>
-                        <div className='pet-avatar-info'>
-                          <span>Name</span>
-                          <span>Info</span>
-                        </div>
+                      {props.data.propietarios!==undefined &&
+                      <div>
+                        {props.data.propietarios.map((d)=>{
+                          return (
+                            <div key={d.id} className='pet-avatar'>
+                              <span className='dog-img'><PersonIcon/></span>
+                              <div className='pet-avatar-info'>
+                                <span>{d.nombre}</span>
+                                <span>Información</span>
+                              </div>
+                            </div>
+                            )
+                          })
+                        }
                       </div>
+                      }
                       <div className='pet-details'>
                         <div className='item-detail'>
                           <span className='title'>
@@ -127,26 +194,86 @@ export default function Menu(props) {
                           <span>
                             {props.data.nombre}
                           </span>
-                        </div>{/*
+                        </div>
                         <div className='item-detail'>
                           <span className='title'>
-                            Nombre
+                            Raza
                           </span>
                           <span>
-                            Mascota de ejemplo
+                            {props.data.nombre_raza}
                           </span>
                         </div>
                         <div className='item-detail'>
                           <span className='title'>
-                            Nombre
+                            Pelaje
                           </span>
                           <span>
-                            Mascota de ejemplo
+                            {props.data.nombre_pelaje}
                           </span>
                         </div>
-                    */}
+                        <div className='item-detail'>
+                          <span className='title'>
+                            Sexo
+                          </span>
+                          <span>
+                            {props.data.nombre_sexo}
+                          </span>
+                        </div>
+                        <div className='item-detail'>
+                          <span className='title'>
+                            Caracter
+                          </span>
+                          <span>
+                            {props.data.nombre_caracter}
+                          </span>
+                        </div>
+                        <div className='item-detail'>
+                          <span className='title'>
+                            Nacimiento
+                          </span>
+                          <span>
+                            {props.data.nacimiento}
+                          </span>
+                        </div>
+                        <div className='item-detail'>
+                          <span className='title'>
+                            Peso
+                          </span>
+                          <span>
+                            {props.data.peso}
+                          </span>
+                        </div>
+                        <div className='item-detail'>
+                          <span className='title'>
+                            Chip
+                          </span>
+                          <span>
+                            {props.data.chip}
+                          </span>
+                        </div>
+                        <div className='item-detail'>
+                          <span className='title'>
+                            Notas
+                          </span>
+                          <span>
+                            {props.data.notas}
+                          </span>
+                        </div>
+
+                        <div className='item-detail item-detail-deseso'>
+                          <Checkbox
+                            checked={props.data.deceso}
+                            name='deceso'
+                          />
+                          <span>Deceso</span>
+                        </div>
+
+                      </div>
                     </div>
-                    </div>
+                    :
+                    <span className='spiner-container'><CircularProgress/></span>
+                    }
+
                   </TabPanel>
                   <TabPanel value={value} index={1}>
                     Item Two
@@ -157,9 +284,26 @@ export default function Menu(props) {
                 </div>
               </div>
             </div>
+            <Dialog
+              open={openDialog && !fetching}
+              message='¿Eliminar?'
+              handleClose={handleOpenDialog}
+              okText='OK'
+              CloseText='CANCELAR'
+              handleOk={deletePet}
+            />
+            <EditPet
+              open={openEdit}
+              data={props.data}
+              onClose={handleOpenEdit}
+              races={props.races}
+              furs={props.furs}
+              sexes={props.sexes}
+              characteres={props.characteres}
+              sesion={props.sesion}
+              onUpdate={handleUpdate}
+            />
           </Drawer>
-        </React.Fragment>
-      ))}
     </div>
   );
 }

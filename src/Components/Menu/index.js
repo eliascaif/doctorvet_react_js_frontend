@@ -70,16 +70,16 @@ export default function Menu(props) {
           <Drawer anchor={anchor} open={state[anchor]} onClose={toggleDrawer(anchor, false)}>
             <div className='menu-hader'>
               <div className='header-item'>
-                <span className='icon-wrapper'><StoreIcon style={{fontSize:'2.5em', color:'#037e69'}}/></span>
+                <span onClick={props.openVetDetail} className='icon-wrapper pointer'><StoreIcon style={{fontSize:'2.5em', color:'#037e69'}}/></span>
                 <div>
-                  <h4 style={{margin:'0'}}>{props.user.veterinary.nombre}</h4>
+                  <h4 onClick={props.openVetDetail} className='pointer' style={{margin:'0'}}>{props.user.veterinary.nombre}</h4>
                   <p style={{margin:'0', fontSize:'.75em'}}>{props.user.veterinary.email}</p>
                 </div>
               </div>
               <div className='header-item'>
-                <span className='icon-wrapper'><PersonIcon style={{fontSize:'2.5em', color:'#037e69'}}/></span>
+                <span onClick={props.openOwnerDetail} className='icon-wrapper pointer'><PersonIcon style={{fontSize:'2.5em', color:'#037e69'}}/></span>
                 <div>
-                  <h4 style={{margin:'0'}}>{props.user.nombre}</h4>
+                  <h4 onClick={props.openOwnerDetail} className='pointer' style={{margin:'0'}}>{props.user.nombre}</h4>
                   <p style={{margin:'0', fontSize:'.75em'}}>{props.user.email}</p>
                 </div>
               </div>

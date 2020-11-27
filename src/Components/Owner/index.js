@@ -2,12 +2,15 @@ import React, { useState, useEffect } from 'react';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import Pet from '../Pet';
 import {useHistory} from 'react-router-dom';
+import {
+    CircularProgress,
+} from '@material-ui/core';
 
 import './styles.scss';
 
 import OwnerDetail from './OwnerDetail';
 
-import {GetOwner} from '../../Services/Owner';
+import {GetOwner, DeleteOwner} from '../../Services/Owner';
 
 const Owner = (props) => {
 
@@ -18,6 +21,7 @@ const Owner = (props) => {
     const [ownerData, setOwnerData] = useState(null);
     const [newData, setNewData] = useState(null);
     const [newOwnerFlag, setNewOwnerFlag] = useState(true);
+    const [fetching, setFetching] = useState(false)
 
     useEffect(()=>{
         let localSesion = null;
@@ -33,6 +37,7 @@ const Owner = (props) => {
         if(localSesion.access_token!==undefined){
             setSesion(localSesion);
             GetOwner(localSesion.access_token, props.id, (data)=>{
+                //console.log('get',data);
                 setOwnerData(data);
             });
             setNewOwnerFlag(props.open);
@@ -45,17 +50,36 @@ const Owner = (props) => {
         setNewOwnerFlag(false);
         if(sesion!==null)
             GetOwner(sesion.access_token, props.id, (data)=>{
-                //console.log(data);
                 setOwnerData(data);
             });
     }
 
     const updatePets = () => {
+        setFetching(true);
         GetOwner(sesion.access_token, props.id, (data)=>{
             console.log('nuevos datos',data);
-            props.onChange(false);
+            props.onChange(data);
             setNewData(data);
+            setFetching(false);
         });
+    }
+
+    const handleDelete = () => {
+        if(!fetching){
+            let data = {token: sesion.access_token, id_veterinaria: sesion.veterinary.id, id_propietario: props.id};
+            console.log(data);
+            setFetching(true);
+            DeleteOwner(data, (resp) => {
+                console.log(resp);
+                setOpen(false);
+                setFetching(false);
+                props.onDelete();
+            },
+            (error) => {
+                console.error(error);
+                setFetching(false);
+            });
+        }
     }
 
     return (
@@ -89,7 +113,8 @@ const Owner = (props) => {
             <OwnerDetail
                 open={!open?(props.open && newOwnerFlag):open}
                 onClose={handleOpen}
-                owner={ownerData}
+                onDelete={handleDelete}
+                owner={newData===null?ownerData:newData}
                 pets={newData===null?(ownerData===null?[]:ownerData.mascotas):newData.mascotas}
                 furs={props.furs}
                 races={props.races}
@@ -97,6 +122,8 @@ const Owner = (props) => {
                 sexes={props.sexes}
                 id={props.id}
                 updatePets={updatePets}
+                fetching={fetching}
+                regions={props.regions}
             />
 
         </React.Fragment>

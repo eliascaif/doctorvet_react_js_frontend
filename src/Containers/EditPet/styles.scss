@@ -1,22 +1,6 @@
-.addpet-wrapper{
-    padding: 1em;
-}
-.add-pet-form{
-    padding: 1em;
-    display: flex;
-    flex-direction: column;
-    box-sizing: border-box;
-}
-.add-pet-container{
-    max-width: 100vw;
-    padding: 0;
-    margin: 0;
-    overflow: hidden;
-    overflow-y: auto;
-    .chip{
-        display: flex;
-        align-items: center;
-    }
+.edit-pet-wrapper{
+    min-height: 100vh;
+    max-width: 100%;
     .new-pet-header.header{
         display: flex;
         position: relative;
@@ -56,5 +40,17 @@
                 font-size: 2em;
             }
         }
+    }
+    
+    .add-pet-form{
+        padding: 1em;
+        display: flex;
+        flex-direction: column;
+        box-sizing: border-box;
+    }
+    
+    .chip{
+        display: flex;
+        align-items: center;
     }
 }

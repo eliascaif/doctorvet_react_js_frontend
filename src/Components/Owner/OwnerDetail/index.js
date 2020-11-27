@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {useHistory} from 'react-router-dom';
 import Drawer from '../../Drawer';
-import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import {
   CircularProgress,
   TextField,
@@ -13,13 +12,16 @@ import {
 import PersonIcon from '@material-ui/icons/Person';
 import CreateIcon from '@material-ui/icons/Create';
 import DeleteIcon from '@material-ui/icons/Delete';
+import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import BackupIcon from '@material-ui/icons/Backup';
 import dog from '../../../Assets/img/dog-blue.svg';
+import Dialog from '../../Dialog';
 
 import WhatsAppIcon from '@material-ui/icons/WhatsApp';
 import PhoneIcon from '@material-ui/icons/Phone';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 import ViewHeadlineIcon from '@material-ui/icons/ViewHeadline';
+import EditOwner from '../../../Containers/EditOwner';
 
 import {
   KeyboardDatePicker,
@@ -59,12 +61,15 @@ const OwnerDetail = (props) => {
     deceso:false,
     date:null
   })
+  const [open, setOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
 
   const handleOpenNewPet = () => {
     setNewPetOpen(!newPetOpen);
   }
 
   const add = () => {
+    console.log(data)
     if(!fetching && /*data.chip!=='' && data.id_caracter!=='' && data.id_pelaje!=='' && data.id_raza!=='' && data.id_sexo!=='' && data.nacimiento!=='' && */data.nombre!=='' /*&& data.notas!=='' && data.peso!=='' && data.id_veterinaria!=='' && data.id_propietario!==''*/){
       setFetching(true);
       AddPet(sesion.access_token, data, 
@@ -152,6 +157,20 @@ const OwnerDetail = (props) => {
     return [year, month, day].join('-');
   }
 
+  const handleOpen = () => {
+    setOpen(!open);
+  }
+
+  const handleEditOpen = () => {
+    //console.log(editOpen)
+    setEditOpen(!editOpen);
+  }
+
+  const updateOwner = (resp) => {
+    console.log('update owner',resp);
+    props.updatePets();
+  } 
+
   return (
     <Drawer 
       open={props.open}
@@ -167,15 +186,15 @@ const OwnerDetail = (props) => {
             </span>
             <span className='header-name'>{props.owner!==null?props.owner.nombre:''}</span>
             <span className='header-crud'>
-              <span><CreateIcon/></span>
-              <span><DeleteIcon/></span>
+              <span onClick={handleEditOpen}><CreateIcon/></span>
+              <span onClick={handleOpen} className='pointer'><DeleteIcon/></span>
             </span>
           </div>
         </div>
         <div className='owner-content'> 
           <div>
             {
-              props.owner===null?
+              (props.owner===null || props.fetching)?
                 <span className='spiner-container'><CircularProgress/></span>
               :
               <React.Fragment>
@@ -240,6 +259,14 @@ const OwnerDetail = (props) => {
             }
           </div>
         </div>
+        <Dialog
+          open={open && !props.fetching}
+          message='¿Eliminar?'
+          handleClose={handleOpen}
+          okText='OK'
+          CloseText='CANCELAR'
+          handleOk={props.onDelete}
+        />
       </div>
       <Drawer
         open={newPetOpen}
@@ -261,7 +288,7 @@ const OwnerDetail = (props) => {
             </span>
         </div>
         <div className='new-pet-content'>
-          {((props.races===null || props.furs===null || props.sexes===null || props.characteres===null) || fetching)?
+          {/*true || */((props.races===null || props.furs===null || props.sexes===null || props.characteres===null) || fetching)?
           <div className='spiner'>
             <CircularProgress/>
           </div>
@@ -412,6 +439,17 @@ const OwnerDetail = (props) => {
           }
         </div>
       </Drawer>
+      {props.owner!==null &&
+      <EditOwner
+        open={editOpen}
+        onClose={handleEditOpen}
+        data={props.owner}
+        regions={props.regions}
+        token={sesion.access_token}
+        id_vet={sesion.x_usuarios_veterinarias.id_veterinaria}
+        onUpdate = {updateOwner}
+      />
+      }
     </Drawer>
   );
 }

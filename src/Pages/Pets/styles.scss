@@ -20,28 +20,27 @@
         display: flex;
         flex-direction: column;
         .pet-name{
-            font-weight: 600;
+            font-weight: bold;
         }
     }
     .pet-owners{
         .owner-name{
-            font-size: .75em;
+            font-size: 1em;
         }
     }
 }
 
 .dog-img{
-    width: 2.5em;
-    height: 2.5em;
+    width: 4em;
+    height: 4em;
     border-radius: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: rgba(0,0,0,.5);
+    background-color:#606060;
     padding: .5em;
     box-sizing: border-box;
-    margin: 0 .5em;
-    margin-left: .5em;
+    margin: 0 1em 0 1em;
     flex: 0 0 auto;
     img{
         filter: brightness(0) invert(100%);

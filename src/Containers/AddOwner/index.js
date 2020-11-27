@@ -55,7 +55,6 @@ const AddOwner = (props) => {
             return;
         }
         setData({...data, [name]:value});
-
     }
 
     const AddOwner = () => {
@@ -104,7 +103,7 @@ const AddOwner = (props) => {
             <div className='new-owner-wrapper'>
                 <div className='header-title'>
                     <div className='controls-new-owner'>
-                        <span onClick={props.onClose} className='pointer'>
+                        <span onClick={props.onClose} className='pointer' style={{marginRight:'1em'}}>
                             <ArrowBackIcon/>
                         </span>
                         <span className='avatar-owner'>
