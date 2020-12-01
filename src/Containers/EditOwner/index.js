@@ -12,6 +12,7 @@ import BackupIcon from '@material-ui/icons/Backup';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 
 import {EditOwner as EditOwnerService} from '../../Services/Owner';
+import {validateEmail} from '../../Validator';
 
 import './styles.scss';
 
@@ -23,6 +24,7 @@ const TextFieldStyles = {
 const EditOwner = (props) => {
 
     const [fetching, setFetching] = useState(false);
+    const [emailError, setEmailError]= useState(false);
 
     const [data, setData] = useState(null);
 
@@ -46,15 +48,27 @@ const EditOwner = (props) => {
 
     const handleUpdate = () => {
         console.log(data);
+        if(!emailError && !fetching){
+            setFetching(true);
+            EditOwnerService(data, (resp) => {
+                console.log(resp);
+                props.onUpdate(resp);
+                props.onClose();
+                setFetching(false);
+            }, (error) => {
+                console.error(error);
+                setFetching(false);
+            });
+        }
 
-        EditOwnerService(data, (resp) => {
-            console.log(resp);
-            props.onUpdate(resp);
-            props.onClose();
-        }, (error) => {
-            console.error(error);
-        });
+    }
 
+    const handleError = (event) => {
+        let name = event.target.name;
+        let value = event.target.value;
+        if(name==='email'){
+            setEmailError(!validateEmail(value));
+        }
     }
 
     return (
@@ -135,10 +149,10 @@ const EditOwner = (props) => {
                         style={TextFieldStyles}
                         onChange={handleData}
                         value={data.email}
-                        //onBlur={handleError}
-                        //error={emailError}
+                        onBlur={handleError}
+                        error={emailError}
                     />
-                    {/*emailError && <span>Por favor corrige aqui</span>*/}
+                    {emailError && <span className='fix-here'>Por favor corrige aqui</span>}
                     </span>
                     <TextField 
                         label='Identificación regional'

@@ -86,6 +86,7 @@ export default function Menu(props) {
   const [fetching, setFetching] = useState(false);
 
   useEffect(()=>{
+    //console.log('props pet', props)
     setState({...state, newPetFlag:props.open});
   },[]);
 
@@ -262,8 +263,9 @@ export default function Menu(props) {
 
                         <div className='item-detail item-detail-deseso'>
                           <Checkbox
-                            checked={props.data.deceso}
+                            checked={props.data.deceso+''==='1'}
                             name='deceso'
+                            disabled={true}
                           />
                           <span>Deceso</span>
                         </div>
@@ -292,6 +294,7 @@ export default function Menu(props) {
               CloseText='CANCELAR'
               handleOk={deletePet}
             />
+            
             <EditPet
               open={openEdit}
               data={props.data}
@@ -302,7 +305,9 @@ export default function Menu(props) {
               characteres={props.characteres}
               sesion={props.sesion}
               onUpdate={handleUpdate}
+              id_propietario={props.id_propietario}
             />
+            
           </Drawer>
     </div>
   );

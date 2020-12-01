@@ -54,23 +54,23 @@ const Owners = (porps) => {
             });
 
             GetRace(localSesion.access_token,(data)=>{
-                //console.log('razas', data)
+                //console.log('razas owners', data)
                 setRaces(data);
             });
 
             GetFur(localSesion.access_token,(data)=>{
                 //console.log('fur', data)
-              setFurs(data);
+                setFurs(data);
             });
       
             GetSex(localSesion.access_token,(data)=>{
                 //console.log('sex', data)
-              setSexes(data);
+                setSexes(data);
             });
       
             GetCharacter(localSesion.access_token,(data)=>{
                 //console.log('char', data)
-              setCaracteres(data);
+                setCaracteres(data);
             });
             //console.log('wait regions')
             GetRegions(localSesion.access_token,(data)=>{
@@ -96,7 +96,7 @@ const Owners = (porps) => {
                 else 
                     return {...n, open:false}
             });
-            console.log(auxData);
+            //console.log(auxData);
             setFetching(false);
             setOwners(auxData);
         });
@@ -120,7 +120,7 @@ const Owners = (porps) => {
     return (
         <div className='owners-wrapper'>
             {
-                !fetching ?
+                (!fetching && furs!==null && races!==null && characteres!==null && sexes!==null) ?
                 owners.map(({nombre, email, mascotas, id, open}, index) => {
                     return (
                         <Owner
@@ -137,6 +137,7 @@ const Owners = (porps) => {
                             onDelete={onDelete}
                             open={open}
                             regions={regions}
+                            sesion={sesion}
                         />
                     )
                 })

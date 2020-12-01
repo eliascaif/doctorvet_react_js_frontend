@@ -173,7 +173,7 @@ const AddOwner = (props) => {
                             onBlur={handleError}
                             error={emailError}
                         />
-                        {emailError && <span>Por favor corrige aqui</span>}
+                        {emailError && <span className='fix-here'>Por favor corrige aqui</span>}
                         </span>
                         <TextField 
                             label='Identificación regional'

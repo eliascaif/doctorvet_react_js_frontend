@@ -29,6 +29,7 @@ import {
 
 import {AddPet} from '../../../Services/Pet';
 import Pet from '../../../Components/Pet';
+//import Dialog from '../../../Components/Dialog';
 
 import './styles.scss';
 
@@ -63,40 +64,50 @@ const OwnerDetail = (props) => {
   })
   const [open, setOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
+  const [errorCreate, setErrorCreate] = useState(false);
 
   const handleOpenNewPet = () => {
     setNewPetOpen(!newPetOpen);
   }
 
   const add = () => {
-    console.log(data)
+    //console.log(data)
     if(!fetching && /*data.chip!=='' && data.id_caracter!=='' && data.id_pelaje!=='' && data.id_raza!=='' && data.id_sexo!=='' && data.nacimiento!=='' && */data.nombre!=='' /*&& data.notas!=='' && data.peso!=='' && data.id_veterinaria!=='' && data.id_propietario!==''*/){
       setFetching(true);
       AddPet(sesion.access_token, data, 
         (data)=>{
-          console.log(data);
-          setFetching(false);
-          setNewPetOpen(!newPetOpen);
-          setData({
-            chip:null,
-            id_caracter:null,
-            id_pelaje:null,
-            id_raza:null,
-            id_sexo:null,
-            nacimiento:null,
-            nombre:'',
-            notas:null,
-            peso:null,
-            thumb:0,
-            id_veterinaria:null,
-            es_principal:1,
-            id_propietario:null,
-            deceso:false,
-            date:null
-          });
-          props.updatePets();
+          //console.log('then data -> ',data);
+          if(!/You have an error/.test(data)){
+            setFetching(false);
+            setNewPetOpen(!newPetOpen);
+            setData({
+              chip:null,
+              id_caracter:null,
+              id_pelaje:null,
+              id_raza:null,
+              id_sexo:null,
+              nacimiento:null,
+              nombre:'',
+              notas:null,
+              peso:null,
+              thumb:0,
+              id_veterinaria:null,
+              es_principal:1,
+              id_propietario:null,
+              deceso:false,
+              date:null
+            });
+            props.updatePets();
+          }
+          else{
+            console.error(data);
+            setErrorCreate(true);
+            setFetching(false);
+          }
         },
         (error)=>{
+          console.error('catch data -> ',error);
+          setErrorCreate(true);
           setFetching(false);
         }
       );
@@ -171,6 +182,10 @@ const OwnerDetail = (props) => {
     props.updatePets();
   } 
 
+  const hanldeCloseError = () => {
+    setErrorCreate(false);
+  }
+
   return (
     <Drawer 
       open={props.open}
@@ -206,6 +221,14 @@ const OwnerDetail = (props) => {
                           key={data.id} 
                           ownerName={props.owner.nombre}
                           data={data}
+
+                          furs={props.furs}
+                          races={props.races}
+                          characteres={props.characteres}
+                          sexes={props.sexes}
+                          sesion={sesion}
+                          id_propietario={props.id}
+                          onUpdate={props.updatePets}
                         >
                           <div className='owner-pet'>
                             <span className='dog-img'><img src={dog} alt='dog' style={{width:'100%'}}/></span>
@@ -246,12 +269,12 @@ const OwnerDetail = (props) => {
                   <p className='description'>{props.owner.notas}</p>
                 </div>
                 <div className='actions-button'>
-                  <PhoneIcon/>
-                  <WhatsAppIcon className='wsp'/>
-                  <WhatsAppIcon className='wsp'/>
-                  <WhatsAppIcon className='wsp'/>
+                  <PhoneIcon className='pointer'/>
+                  <WhatsAppIcon className='wsp pointer'/>
+                  <WhatsAppIcon className='wsp pointer'/>
+                  <WhatsAppIcon className='wsp pointer'/>
                   <AddCircleIcon 
-                    className='add'
+                    className='add pointer'
                     onClick={handleOpenNewPet}
                   />
                 </div>
@@ -438,6 +461,11 @@ const OwnerDetail = (props) => {
           </span>
           }
         </div>
+        <Dialog
+          open={errorCreate}
+          message='Ha ocurrido un error creando la mascota'
+          handleClose={hanldeCloseError}
+        />
       </Drawer>
       {props.owner!==null &&
       <EditOwner

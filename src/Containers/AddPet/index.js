@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Drawer from '../../Components/Drawer';
+import Dialog from '../../Components/Dialog';
 import {GetRace, GetFur, GetSex, GetCharacter} from '../../Services/Pet';
 import {AddPet as AddService} from '../../Services/Pet';
 import {GetOwners} from '../../Services/Owner';
@@ -39,6 +40,7 @@ const AddPet = (props) => {
     const [characteres, setCaracteres] = useState(null);
     const [fetching, setFetching] = useState(false);
     const [owners, setOwners] = useState(null);
+    const [errorCreate, setErrorCreate] = useState(false);
 
     const [data, setData] = useState({
         chip:null,
@@ -110,26 +112,34 @@ const AddPet = (props) => {
           AddService(sesion.access_token, data, 
             (resp)=>{
                 console.log(resp);
-                setFetching(false);
-//              setNewPetOpen(!newPetOpen);
-                setData({
-                    ...data,
-                    chip:null,
-                    id_caracter:null,
-                    id_pelaje:null,
-                    id_raza:null,
-                    id_sexo:null,
-                    nacimiento:null,
-                    nombre:'',
-                    notas:null,
-                    peso:null,
-                    thumb:0,
-                    es_principal:1,
-                    id_propietario:'',
-                    deceso:false,
-                    date:null
-                });
-                props.updatePets(resp);
+                
+                if(!/You have an error/.test(resp)){
+                    setFetching(false);
+    //              setNewPetOpen(!newPetOpen);
+                    setData({
+                        ...data,
+                        chip:null,
+                        id_caracter:null,
+                        id_pelaje:null,
+                        id_raza:null,
+                        id_sexo:null,
+                        nacimiento:null,
+                        nombre:'',
+                        notas:null,
+                        peso:null,
+                        thumb:0,
+                        es_principal:1,
+                        id_propietario:'',
+                        deceso:false,
+                        date:null
+                    });
+                    props.updatePets(resp);
+                }
+                else{
+                    console.error(resp);
+                    setErrorCreate(true);
+                    setFetching(false);
+                }
             },
             (error)=>{
               setFetching(false);
@@ -173,6 +183,10 @@ const AddPet = (props) => {
             day = '0' + day;
     
         return [year, month, day].join('-');
+    }
+
+    const hanldeCloseError = () => {
+        setErrorCreate(false);
     }
 
     return (
@@ -368,6 +382,11 @@ const AddPet = (props) => {
                         <CircularProgress/>
                     </span>
                 }
+                <Dialog
+                  open={errorCreate}
+                  message='Ha ocurrido un error creando la mascota'
+                  handleClose={hanldeCloseError}
+                />
             </Drawer>
         </div>
     )

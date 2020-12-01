@@ -4,6 +4,7 @@ import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import BackupIcon from '@material-ui/icons/Backup';
 import dog from '../../Assets/img/dog-blue.svg';
 import ViewHeadlineIcon from '@material-ui/icons/ViewHeadline';
+import {useHistory} from 'react-router-dom';
 
 import {
     CircularProgress,
@@ -43,6 +44,8 @@ function formatDate(date) {
 
 const EditPet = (props) => {
 
+    const history = useHistory();
+
     const [data, setData] = useState({
         chip:null,
         id_caracter:null,
@@ -61,10 +64,31 @@ const EditPet = (props) => {
         date:null
     });
 
+    const [sesion, setSesion] = useState(null);
+
     const [fetching, setFetching] = useState(false);
 
     useEffect(()=>{
-        setData({...props.data, id_veterinaria:props.sesion.veterinary.id});
+        let localSesion = null;
+        try {
+            localSesion = JSON.parse(localStorage.getItem('sesion'));
+        } catch (error) {
+            localStorage.setItem('sesion', null);
+        }
+        if(localSesion===null){
+            history.push('/');
+            return;
+        }
+        if(localSesion.access_token!==undefined){
+            setSesion(localSesion);
+            //console.log('edit pet sesion',localSesion);
+        }
+        //console.log('props edit pet', props);
+        if(props.data.propietarios===undefined)
+            setData({...props.data, id_veterinaria:localSesion.veterinary.id, propietarios:[{id:props.id_propietario}]});
+        else
+            setData({...props.data, id_veterinaria:localSesion.veterinary.id});
+        
     },[]);
 
     const handleData = (event) => {
@@ -90,7 +114,7 @@ const EditPet = (props) => {
         console.log(props.data);
         setFetching(true)
         UpdatePet(props.sesion.access_token, data, (resp)=>{
-            //console.log(resp);
+            console.log(resp);
             props.onUpdate(resp);
             setFetching(false);
         },
@@ -123,7 +147,7 @@ const EditPet = (props) => {
                 </span>
             </div>
             <div>
-                {(props.races!==null && props.furs!==null && props.characteres!==null && props.sexes!==null && !fetching) ?
+                {(props.races!==null && props.races!==undefined && props.furs!==null && props.furs!==undefined && props.characteres!==null && props.characteres!==undefined && props.sexes!==null  && props.sexes!==undefined && !fetching) ?
                 <span className='add-pet-form'>
                     <TextField 
                         label='Nombre'

@@ -24,6 +24,7 @@ const Owner = (props) => {
     const [fetching, setFetching] = useState(false)
 
     useEffect(()=>{
+        //console.log('props owner', props)
         let localSesion = null;
         try {
             localSesion = JSON.parse(localStorage.getItem('sesion'));
@@ -93,6 +94,8 @@ const Owner = (props) => {
                 <div className='owner-data'>
                     <h4 onClick={handleOpen} className='pointer'>{props.name}</h4>
                     <span className='owner-email'>{props.email}</span>
+                    
+                    {sesion!==null &&
                     <div className='owner-pets-dashboard'>
                         {
                             [...props.pets].map((data, index)=>{
@@ -101,6 +104,13 @@ const Owner = (props) => {
                                         key={data.id}
                                         ownerName={props.name}
                                         data={data}
+                                        furs={props.furs}
+                                        races={props.races}
+                                        characteres={props.characteres}
+                                        sexes={props.sexes}
+                                        sesion={sesion}
+                                        id_propietario={props.id}
+                                        onUpdate={updatePets}
                                     >
                                         <span className='owner-pet-name'><span>{data.nombre}</span> - <span>{props.name}</span></span>
                                     </Pet>
@@ -108,6 +118,8 @@ const Owner = (props) => {
                             })
                         }
                     </div>
+                    }
+
                 </div>
             </div>
             <OwnerDetail

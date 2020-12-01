@@ -116,7 +116,7 @@ const Pets = (props) => {
     return (
         <div className='pets-wrapper' style={{width:'100%'}}>
             {
-                (pets===null || fetching) ? 
+                (pets===null || fetching || sesion===undefined) ? 
                     <span className='circular-progress'>
                         <CircularProgress/>
                     </span>
@@ -136,7 +136,6 @@ const Pets = (props) => {
                                     sexes={sexes}
                                     characteres={characteres}
                                     races={races}
-                                    sesion={sesion}
                                     onUpdate={UpdatePet}
                                 >
                                 <div className='pet-list-item'>

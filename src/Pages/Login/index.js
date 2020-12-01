@@ -41,41 +41,43 @@ const Login = (props) => {
     }
 
     const responseFacebook = (response) => {
-        setDisabled(true);
         console.log('Facebook response',response);
-        let data = {email: response.email, nombre: response.name, tipo_login: 'FACEBOOK', unique_id: response.id}
-        LoginFacebookGoogle(data, (resp) => {
-            console.log(resp);
+        if(response.status===undefined){
+            setDisabled(true);
+            let data = {email: response.email, nombre: response.name, tipo_login: 'FACEBOOK', unique_id: response.id}
+            LoginFacebookGoogle(data, (resp) => {
+                console.log(resp);
 
-            if(resp.response==='ACCOUNT_WAITING_FOR_EMAIL_CHECK'){
-                setVerified(false);
-                setEmail(resp.email);
-                return;
-            }
-            localStorage.setItem('sesion', JSON.stringify(resp));
-            setSesion(resp);
-            if(props.onChangeSesion){
-                props.onChangeSesion(JSON.stringify(resp));
-            }
-            setDisabled(false);
-            if(resp.id_x_usuarios_veterinarias_en_uso===null){
-                console.log('push to set veterinary')
-                history.push('/set-veterinary');
-            }
-            else
-                history.push('/dashboard');
+                if(resp.response==='ACCOUNT_WAITING_FOR_EMAIL_CHECK'){
+                    setVerified(false);
+                    setEmail(resp.email);
+                    return;
+                }
+                localStorage.setItem('sesion', JSON.stringify(resp));
+                setSesion(resp);
+                if(props.onChangeSesion){
+                    props.onChangeSesion(JSON.stringify(resp));
+                }
+                setDisabled(false);
+                if(resp.id_x_usuarios_veterinarias_en_uso===null){
+                    console.log('push to set veterinary')
+                    history.push('/set-veterinary');
+                }
+                else
+                    history.push('/dashboard');
 
-        },
-        (error) => {
-            setDisabled(false);
-            console.error(error);
-        });
+            },
+            (error) => {
+                setDisabled(false);
+                console.error(error);
+            });
+        }
     }
     
     const responseGoogle = (response) => {
         console.log('Google response',response.profileObj);
-        setDisabled(true);
         if(response.profileObj!==undefined){
+            setDisabled(true);
             let data = {email: response.profileObj.email, nombre: response.profileObj.name, tipo_login: 'GOOGLE', unique_id: response.profileObj.googleId};
             console.log(data);
             LoginFacebookGoogle(data, (resp) => {
@@ -121,12 +123,15 @@ const Login = (props) => {
     const [errorMessage, setErrorMessage] = useState({status:false, message:''});
 
     const handleLogin = () => {
+        console.log(userData)
         setDisabled(true);
+        
         LoginService({...userData, tipo_login:'EMAIL'}, (data) => {
             console.log(data);
             //if(data.usuario.id_x_usuarios_veterinarias_en_uso!==null)
             if(data.response==='ACCOUNT_WAITING_FOR_EMAIL_CHECK'){
                 setVerified(false);
+                setDisabled(false);
                 setEmail(data.usuario.email);
                 return;
             }
@@ -147,6 +152,7 @@ const Login = (props) => {
             setErrorMessage({status:true, message:error});
             setDisabled(false);
         });
+        
     }
 
     const handleNotVerified = () => {
@@ -176,11 +182,15 @@ const Login = (props) => {
                 !verified?
                 <div className='not-verified'>
                     <span style={{textAlign:'center'}}>
-                        Por favor revisa tu correo electronico {email} para ingresar
+                        <span className='loader-wrapper'>
+                            <span className={'loader '+(disabled?'hidden':'visible')}>Por favor revisa tu correo electronico {email} para ingresar</span>
+                            <span className={'loader '+(disabled?'visible':'hidden')}><CircularProgress/></span>
+                        </span>
                         <Button
                             variant="contained"
                             style={{width:'100%', boxShadow:'none', margin:'1em 0 1em 0'}}
-                            onClick={handleNotVerified}
+                            onClick={handleLogin}
+                            disabled={disabled}
                         >
                             Ingresar
                         </Button>
@@ -188,6 +198,7 @@ const Login = (props) => {
                             variant="contained"
                             style={{width:'100%', boxShadow:'none'}}
                             onClick={handleNotVerified}
+                            disabled={disabled}
                         >
                             Usar otra cuenta
                         </Button>
@@ -240,7 +251,7 @@ const Login = (props) => {
                                 clientId="117867739974-u1p6folp269rufct1me8iqo4ahv48kss.apps.googleusercontent.com"
                                 buttonText="Sign in"
                                 onSuccess={responseGoogle}
-                                onFailure={responseGoogle}
+                                //onFailure={responseGoogle}
                                 cookiePolicy={'single_host_origin'}
                                 className='google-button'
                             />
