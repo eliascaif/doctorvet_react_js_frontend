@@ -3,7 +3,7 @@ import config from "../../Assets/localConfig.json";
 const GetVeterinary = (data, token, callback) => {
   var myHeaders = new Headers();
   myHeaders.append("Authorization", token);
-  myHeaders.append("Content-Type", "application/json");
+  // myHeaders.append("Content-Type", "application/json");
 
   var requestOptions = {
     method: "GET",
@@ -11,7 +11,7 @@ const GetVeterinary = (data, token, callback) => {
     redirect: "follow",
   };
 
-  let url = config.baseApi + "get_veterinaria.php?id_veterinaria=" + data;
+  let url = config.baseApi + "veterinarias.php?id_veterinaria=" + data;
 
   fetch(url, requestOptions)
     .then((response) => {
@@ -54,7 +54,7 @@ const GetVeterinaries = (data, token, callback) => {
 const JoinVet = (data, token, callback) => {
   var myHeaders = new Headers();
   myHeaders.append("Authorization", token);
-  myHeaders.append("Content-Type", "application/json");
+  //myHeaders.append("Content-Type", "application/json");
 
   var raw = JSON.stringify(data);
 
@@ -99,7 +99,7 @@ const CreateVet = (data, userID, token, callback) => {
     redirect: "follow",
   };
 
-  let url = config.baseApi + "insert_veterinaria.php";
+  let url = config.baseApi + "veterinarias.php";
   console.log(url, data);
   fetch(url, requestOptions)
     .then((response) => {

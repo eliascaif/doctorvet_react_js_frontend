@@ -3,7 +3,11 @@
     "device_name":"web",
     "tipo_login":{
         "GOOGLE":"GOOGLE"
+    },
+    "sistemas_medidas":{
+        "METRICO_DECIMAL":"METRICO_DECIMAL",
+        "INGLES":"INGLES"
+        
     }
-
 
 }

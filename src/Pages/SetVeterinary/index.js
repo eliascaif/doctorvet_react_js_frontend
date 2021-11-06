@@ -8,8 +8,12 @@ import {
   FormControl,
   Select,
   MenuItem,
+  FormLabel,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
 } from "@material-ui/core";
-
+import config from "../../Assets/localConfig.json";
 import Dialog from "../../Components/Dialog";
 
 import { makeStyles } from "@material-ui/core/styles";
@@ -55,7 +59,7 @@ const SetVeterinary = (props) => {
   const [data, setData] = useState({
     direccion: "",
     email: "",
-    id: "",
+    id_region: "",
     nombre: "",
     nombre_region: "",
     notas: "",
@@ -63,6 +67,7 @@ const SetVeterinary = (props) => {
     propietario: "",
     telefono: "",
     thumb: 0,
+    sistema_unidades: "",
   });
   const [error, setError] = useState({
     email: false,
@@ -84,6 +89,11 @@ const SetVeterinary = (props) => {
     }
     if (localSesion.access_token !== undefined) {
       setSesion(localSesion);
+      setData({
+        ...data,
+        id_usuario: localSesion.id,
+        sistema_unidades: config.sistemas_medidas.METRICO_DECIMAL,
+      });
       GetVeterinaries(
         localSesion.id,
         localSesion.access_token,
@@ -158,32 +168,43 @@ const SetVeterinary = (props) => {
   };
 
   const handleAddVet = () => {
-    console.log(!validateEmail(data.email));
+    debugger;
+    //console.log(!validateEmail(data.email));
     setError({ ...error, email: !validateEmail(data.email) });
     if (fetching || status) return;
-    setFetching(true);
+
     if (
       validateEmail(data.email) &&
       data.email !== "" &&
       data.nombre !== "" &&
       !status
     ) {
-      CreateVet(data, sesion.id, sesion.access_token, (data) => {
-        console.log("response ", data);
-        if (/^[0-9]*/.test(data)) {
-          setStatus(true);
-          localStorage.setItem(
-            "sesion",
-            JSON.stringify({
-              ...JSON.parse(localStorage.getItem("sesion")),
-              id_x_usuarios_veterinarias_en_uso: data,
-              x_usuarios_veterinarias: { id_veterinaria: data },
-            })
-          );
-          handleLogin();
+      setFetching(true);
+      CreateVet(
+        data,
+        sesion.id,
+        sesion.access_token,
+        (data) => {
+          console.log("response ", data);
+          if (/^[0-9]*/.test(data)) {
+            setStatus(true);
+            localStorage.setItem(
+              "sesion",
+              JSON.stringify({
+                ...JSON.parse(localStorage.getItem("sesion")),
+                id_x_usuarios_veterinarias_en_uso: data,
+                x_usuarios_veterinarias: { id_veterinaria: data },
+              })
+            );
+            handleLogin();
+          }
+          setFetching(false);
+        },
+        (error) => {
+          setFetching(false);
+          console.error(error);
         }
-        setFetching(false);
-      });
+      );
     }
   };
   /*buenas noches elias como estas, estoy trabajando en el frlujo de un usuario sin veterinaria asociada.
@@ -193,9 +214,9 @@ pero te comento para que madures la idea y mañana me des tu opinion, en la app 
     let value = event.target.value;
     let name = event.target.name;
     //console.log(data)
-    if (name === "id") {
+    if (name === "id_region") {
       let aux = value.split("*vet*");
-      setData({ ...data, id: aux[0], nombre_region: aux[1] });
+      setData({ ...data, id_region: aux[0], nombre_region: aux[1] });
       return;
     }
     setData({ ...data, [name]: value });
@@ -342,17 +363,17 @@ pero te comento para que madures la idea y mañana me des tu opinion, en la app 
                 <FormControl className={classes.formControl}>
                   <InputLabel>Región</InputLabel>
                   <Select
-                    value={data.id + "*vet*" + data.nombre_region}
+                    value={data.id_region + "*vet*" + data.nombre_region}
                     onChange={handleData}
-                    name="id"
+                    name="id_region"
                   >
-                    {regions.map((data) => {
+                    {regions.map((region) => {
                       return (
                         <MenuItem
-                          value={data.id + "*vet*" + data.nombre_region}
-                          key={data.id}
+                          value={region.id + "*vet*" + region.nombre_region}
+                          key={region.id}
                         >
-                          {data.nombre_region}
+                          {region.nombre_region}
                         </MenuItem>
                       );
                     })}
@@ -418,6 +439,29 @@ pero te comento para que madures la idea y mañana me des tu opinion, en la app 
                   onChange={handleData}
                   /*disabled={disabled}*/
                 />
+
+                <FormControl component="fieldset">
+                  <FormLabel component="legend">Sistemas de medidas</FormLabel>
+                  <RadioGroup
+                    row
+                    aria-label="sistema_unidades_"
+                    name="sistema_unidades"
+                    defaultValue={config.sistemas_medidas.METRICO_DECIMAL}
+                    onChange={handleData}
+                  >
+                    <FormControlLabel
+                      value={config.sistemas_medidas.METRICO_DECIMAL}
+                      control={<Radio color="#3f51b5" />}
+                      label="Metrico decimal"
+                    />
+                    <FormControlLabel
+                      value={config.sistemas_medidas.INGLES}
+                      control={<Radio color="#3f51b5" />}
+                      label="ingles"
+                    />
+                  </RadioGroup>
+                </FormControl>
+
                 {/*<Button
                             variant="contained"
                             style={{width:'calc(100% - 1em)', boxShadow:'none', margin:'1em .5em .5em .5em'}}
