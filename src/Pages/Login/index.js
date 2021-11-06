@@ -88,8 +88,9 @@ const Login = (props) => {
       let data = {
         email: response.profileObj.email,
         nombre: response.profileObj.name,
-        tipo_login: "GOOGLE",
-        unique_id: response.profileObj.googleId,
+        tipo_login: config.tipo_login.GOOGLE,
+        doctor_vet_unique_id: response.profileObj.googleId,
+        photo_url: response.profileObj.imageUrl,
       };
       console.log(data);
       LoginFacebookGoogle(

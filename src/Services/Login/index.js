@@ -4,13 +4,10 @@ const Login = (data, callback, errorCallback) => {
   let url = config.baseApi + "user_login_account.php";
   fetch(url, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: {},
     body: JSON.stringify(data),
   })
     .then((response) => {
-      //console.log(response);
       return response.json();
     })
     .then((json) => {
@@ -26,36 +23,24 @@ const Login = (data, callback, errorCallback) => {
 };
 
 const LoginFacebookGoogle = (data, callback, errorCallback) => {
-  var myHeaders = new Headers();
-  myHeaders.append(
-    "Authorization",
-    "1b845f0b84f5e8d02db992788ec8e1a2be37e11a1ace1b7ca67a5fa5c23b0b30"
-  );
-  myHeaders.append("Content-Type", "application/json");
-
   var raw = JSON.stringify({
     email: data.email,
     nombre: data.nombre,
-    photo_url: null,
-    device_name: "Web app",
+    photo_url: data.photo_url,
+    device_name: config.device_name,
     tipo_login: data.tipo_login,
-    unique_id: data.unique_id,
+    doctor_vet_unique_id: data.doctor_vet_unique_id,
   });
 
   var requestOptions = {
     method: "POST",
-    headers: myHeaders,
     body: raw,
     redirect: "follow",
   };
-
-  fetch(
-    "http://34.95.245.77/android_doctor_vet/api/user_facebook_google_login.php",
-    requestOptions
-  )
+  let url = config.baseApi + "user_facebook_google_login.php";
+  fetch(url, requestOptions)
     .then((response) => response.json())
     .then((result) => {
-      //console.log(result);
       callback(result);
     })
     .catch((error) => errorCallback(error));
