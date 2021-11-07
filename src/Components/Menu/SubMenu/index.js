@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import AddCircleIcon from "@material-ui/icons/AddCircle";
 import AddIcon from "@material-ui/icons/Add";
 import { Box, Grid, Modal, Typography } from "@material-ui/core";
@@ -9,6 +9,10 @@ import { Link, useHistory } from "react-router-dom";
 
 export default function SubMenu(props) {
   const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    setOpen(false);
+  }, [props.open]);
 
   return (
     <>
@@ -29,7 +33,11 @@ export default function SubMenu(props) {
               </Link>
             </Grid>
             <Grid className="with-icon" xs={3}>
-              <Link to="/pets" className="with-icon">
+              <Link
+                to={!props.addPet && "/pets/create"}
+                onClick={props.addPet && props.addPet}
+                className="with-icon"
+              >
                 <AddIcon fontSize="large" />
                 Nueva mascota
               </Link>
@@ -44,7 +52,11 @@ export default function SubMenu(props) {
               </Link>
             </Grid>
             <Grid className="with-icon" xs={3}>
-              <Link to="/owners" className="with-icon">
+              <Link
+                to={!props.addOwner && "/owners/create"}
+                onClick={props.addOwner && props.addOwner}
+                className="with-icon"
+              >
                 <AddIcon fontSize="large" />
                 Nuevo propietario
               </Link>
