@@ -13,16 +13,34 @@ const GetVeterinary = (data, token, callback) => {
 
   let url = config.baseApi + "veterinarias.php?id_veterinaria=" + data;
 
-  fetch(url, requestOptions)
-    .then((response) => {
-      return response.json();
-    })
-    .then((json) => {
-      callback(json);
-    })
-    .catch((error) => {
-      console.log(error);
-    });
+  const json = {
+    id: 6,
+    nombre: "name",
+    propietario: "pro",
+    direccion: "dir",
+    id_region: 7,
+    nombre_region: "Almirante Brown / Buenos Aires",
+    latlng: null,
+    telefono: 4560,
+    email: "test12245@gmail.co",
+    pagina_web: null,
+    notas: 123,
+    configuracion_inicio: 0,
+    photo_url: null,
+    thumb_url: null,
+    sistema_unidades: "METRICO_DECIMAL",
+  };
+  callback(json);
+  // fetch(url, requestOptions)
+  //   .then((response) => {
+  //     return response.json();
+  //   })
+  //   .then((json) => {
+  //     callback(json);
+  //   })
+  //   .catch((error) => {
+  //     console.log(error);
+  //   });
 };
 
 const GetVeterinaries = (data, token, callback) => {
