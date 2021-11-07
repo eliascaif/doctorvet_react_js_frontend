@@ -62,13 +62,13 @@ const Login = (props) => {
             setEmail(resp.email);
             return;
           }
-          localStorage.setItem("sesion", JSON.stringify(resp));
-          setSesion(resp);
+          localStorage.setItem("sesion", JSON.stringify(resp.usuario));
+          setSesion(resp.usuario);
           if (props.onChangeSesion) {
-            props.onChangeSesion(JSON.stringify(resp));
+            props.onChangeSesion(JSON.stringify(resp.usuario));
           }
           setDisabled(false);
-          if (resp.id_x_usuarios_veterinarias_en_uso === null) {
+          if (resp.usuario.id_x_usuarios_veterinarias_en_uso === null) {
             console.log("push to set veterinary");
             history.push("/set-veterinary");
           } else history.push("/dashboard");
@@ -103,13 +103,13 @@ const Login = (props) => {
             setEmail(resp.email);
             return;
           }
-          localStorage.setItem("sesion", JSON.stringify(resp));
-          setSesion(resp);
+          localStorage.setItem("sesion", JSON.stringify(resp.usuario));
+          setSesion(resp.usuario);
           if (props.onChangeSesion) {
-            props.onChangeSesion(JSON.stringify(resp));
+            props.onChangeSesion(JSON.stringify(resp.usuario));
           }
           setDisabled(false);
-          if (resp.id_x_usuarios_veterinarias_en_uso === null) {
+          if (resp.usuario.id_x_usuarios_veterinarias_en_uso === null) {
             console.log("push to set veterinary");
             history.push("/set-veterinary");
           } else history.push("/dashboard");
