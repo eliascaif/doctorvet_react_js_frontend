@@ -56,17 +56,92 @@ const GetVeterinaries = (data, token, callback) => {
 
   let url = config.baseApi + "veterinarias.php?id_usuario=" + data;
 
-  console.log(url);
-  fetch(url, requestOptions)
-    .then((response) => {
-      return response.json();
-    })
-    .then((json) => {
-      callback(json);
-    })
-    .catch((error) => {
-      console.log(error);
-    });
+  const json = [
+    {
+      id: 2,
+      nombre: "FacebookLogin",
+      id_region: 7,
+      email: "facebooklogin@emial.com",
+      nombre_region: "Almirante Brown / Buenos Aires",
+      sistema_unidades: "METRICO_DECIMAL",
+    },
+    {
+      id: 3,
+      nombre: "GoogleLogin",
+      id_region: 17,
+      email: "googlelogin@email.com",
+      nombre_region: "Avellaneda / Buenos Aires",
+      sistema_unidades: "METRICO_DECIMAL",
+    },
+    {
+      id: 7,
+      nombre: "jorge",
+      propietario: 123,
+      direccion: "dir",
+      id_region: 7,
+      telefono: 312456000,
+      email: "jor@e.com",
+      nombre_region: "Almirante Brown / Buenos Aires",
+      sistema_unidades: "METRICO_DECIMAL",
+    },
+    {
+      id: 6,
+      nombre: "name",
+      propietario: "pro",
+      direccion: "dir",
+      id_region: 7,
+      telefono: 4560,
+      email: "test12245@gmail.co",
+      notas: 123,
+      nombre_region: "Almirante Brown / Buenos Aires",
+      sistema_unidades: "METRICO_DECIMAL",
+    },
+    {
+      id: 4,
+      nombre: "Test",
+      propietario: "Yo",
+      direccion: "Calle 1",
+      id_region: 719,
+      telefono: 612222222,
+      email: "vete1@123.com",
+      pagina_web: "www.test.com",
+      notas: "no tengo",
+      nombre_region: "Argentina / Argentina",
+      sistema_unidades: "METRICO_DECIMAL",
+    },
+    {
+      id: 5,
+      nombre: "Test",
+      propietario: "yo",
+      direccion: "test",
+      id_region: 719,
+      telefono: 31204555,
+      email: "jorge@gmail.com",
+      notas: "nota",
+      nombre_region: "Argentina / Argentina",
+      sistema_unidades: "METRICO_DECIMAL",
+    },
+    {
+      id: 1,
+      nombre: "Veterinaria1",
+      id_region: 7,
+      email: "veterinaria1@email.com",
+      nombre_region: "Almirante Brown / Buenos Aires",
+      sistema_unidades: "METRICO_DECIMAL",
+    },
+  ];
+
+  callback(json);
+  // fetch(url, requestOptions)
+  //   .then((response) => {
+  //     return response.json();
+  //   })
+  //   .then((json) => {
+  //     callback(json);
+  //   })
+  //   .catch((error) => {
+  //     console.log(error);
+  //   });
 };
 
 const JoinVet = (data, token, callback) => {
@@ -83,7 +158,7 @@ const JoinVet = (data, token, callback) => {
     redirect: "follow",
   };
 
-  let url = config.baseApi + "insert_x_peticiones_usuarios_veterinarias.php";
+  let url = config.baseApi + "usuarios_peticiones.php";
   console.log(url, data);
   fetch(url, requestOptions)
     .then((response) => {
