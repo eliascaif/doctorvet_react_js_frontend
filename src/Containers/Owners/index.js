@@ -130,6 +130,7 @@ const Owners = (porps) => {
         owners.map(({ nombre, email, mascotas, id, open }, index) => {
           return (
             <Owner
+              id_veterinaria={sesion.x_usuarios_veterinarias.id_veterinaria}
               name={nombre}
               email={email}
               pets={mascotas}

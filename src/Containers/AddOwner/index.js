@@ -7,6 +7,8 @@ import {
   FormControl,
   InputLabel,
   Select,
+  FormControlLabel,
+  Checkbox,
 } from "@material-ui/core";
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
 import BackupIcon from "@material-ui/icons/Backup";
@@ -32,6 +34,7 @@ const AddOwner = (props) => {
     notas: "",
     token: "",
     id_veterinaria: "",
+    planificadas_tarea: false,
   });
 
   const [fetching, setFetching] = useState(false);
@@ -50,6 +53,10 @@ const AddOwner = (props) => {
       if (/^[0-9]*$/.test(value)) setData({ ...data, [name]: value });
       return;
     }
+    if (name === "planificadas_tarea") {
+      value = event.target.checked;
+    }
+
     setData({ ...data, [name]: value });
   };
 
@@ -80,6 +87,7 @@ const AddOwner = (props) => {
               email: null,
               // id_regional:null,
               notas: null,
+              planificadas_tarea: 0,
             });
             setFetching(false);
           },
@@ -200,6 +208,20 @@ const AddOwner = (props) => {
                 style={TextFieldStyles}
                 onChange={handleData}
                 value={data.notas}
+              />
+
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    name="planificadas_tarea"
+                    checked={data.planificadas_tarea}
+                    onChange={handleData}
+                    style={{
+                      color: "#4052b6",
+                    }}
+                  />
+                }
+                label="Gestionar suministro planificado como tareas domiciliarias"
               />
             </React.Fragment>
           ) : (

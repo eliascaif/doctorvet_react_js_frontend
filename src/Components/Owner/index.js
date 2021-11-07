@@ -34,27 +34,31 @@ const Owner = (props) => {
     }
     if (localSesion.access_token !== undefined) {
       setSesion(localSesion);
-      GetOwner(localSesion.access_token, props.id, (data) => {
-        //console.log('get',data);
-        setOwnerData(data);
-      });
+      GetOwner(
+        localSesion.access_token,
+        props.id,
+        props.id_veterinaria,
+        (data) => {
+          //console.log('get',data);
+          setOwnerData(data);
+        }
+      );
       setNewOwnerFlag(props.open);
     }
   }, []);
 
   const handleOpen = () => {
-    debugger;
     if (!newOwnerFlag) setOpen(!open);
     setNewOwnerFlag(false);
     if (sesion !== null)
-      GetOwner(sesion.access_token, props.id, (data) => {
+      GetOwner(sesion.access_token, props.id, props.id_veterinaria, (data) => {
         setOwnerData(data);
       });
   };
 
   const updatePets = () => {
     setFetching(true);
-    GetOwner(sesion.access_token, props.id, (data) => {
+    GetOwner(sesion.access_token, props.id, props.id_veterinaria, (data) => {
       console.log("nuevos datos", data);
       props.onChange(data);
       setNewData(data);

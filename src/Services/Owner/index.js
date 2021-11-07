@@ -11,7 +11,19 @@ const GetOwners = (token, vet_id, callback) => {
   };
   //callback([{nombre:'vet 1', email:'asd@asd.dsa', id:'1'}, {nombre:'vet 1', email:'asd@asd.dsa', id:'1'}, {nombre:'vet 1', email:'asd@asd.dsa', id:'1'}])
   const json = {
-    content: [],
+    content: [
+      {
+        id: 7,
+        nombre: "dos",
+        direccion: "dos",
+        id_region: 719,
+        telefono: 3455550,
+        email: "emai@doc.co",
+        notas: "nota",
+        nombre_region: "Argentina",
+        mascotas: [],
+      },
+    ],
     page: 1,
     results_per_page: 40,
     total_results: 0,
@@ -33,7 +45,7 @@ const GetOwners = (token, vet_id, callback) => {
   //     });
 };
 
-const GetOwner = (token, id, callback) => {
+const GetOwner = (token, id, id_veterinaria, callback) => {
   var myHeaders = new Headers();
   myHeaders.append("Authorization", token);
 
@@ -43,18 +55,33 @@ const GetOwner = (token, id, callback) => {
     redirect: "follow",
   };
 
-  let url = config.baseApi + "propietarios.php?id_propietario=" + id;
+  let url =
+    config.baseApi +
+    `propietarios.php?id_veterinaria=${id_veterinaria}&id_propietario=${id}`;
   //console.log(url)
-  fetch(url, requestOptions)
-    .then((response) => {
-      return response.json();
-    })
-    .then((json) => {
-      callback(json);
-    })
-    .catch((error) => {
-      console.log(error);
-    });
+  const data = {
+    id: 7,
+    nombre: "dos",
+    direccion: "dos",
+    id_region: 719,
+    telefono: 3455550,
+    email: "emai@doc.co",
+    notas: "nota",
+    nombre_region: "Argentina",
+    planificadas_tarea: 0,
+    mascotas: [],
+  };
+  callback(data);
+  // fetch(url, requestOptions)
+  //   .then((response) => {
+  //     return response.json();
+  //   })
+  //   .then((json) => {
+  //     callback(json);
+  //   })
+  //   .catch((error) => {
+  //     console.log(error);
+  //   });
 };
 
 const AddOwner = (data, callback, errorCallback) => {
@@ -72,6 +99,7 @@ const AddOwner = (data, callback, errorCallback) => {
       notas: data.notas,
       telefono: data.telefono,
       id_veterinaria: data.id_veterinaria,
+      planificadas_tarea: data.planificadas_tarea,
     },
     {},
   ]);
@@ -101,20 +129,22 @@ const AddOwner = (data, callback, errorCallback) => {
 const DeleteOwner = (data, callback, errorCallback) => {
   var myHeaders = new Headers();
   myHeaders.append("Authorization", data.token);
-  myHeaders.append("Content-Type", "application/json");
+  // myHeaders.append("Content-Type", "application/json");
 
-  var raw = JSON.stringify({
-    id_propietario: data.id_propietario,
-    id_veterinaria: data.id_veterinaria,
-  });
+  // var raw = JSON.stringify({
+  //   id_propietario: data.id_propietario,
+  //   id_veterinaria: data.id_veterinaria,
+  // });
 
   var requestOptions = {
-    method: "POST",
+    method: "DELETE",
     headers: myHeaders,
-    body: raw,
+    //body: raw,
     redirect: "follow",
   };
-  let url = config.baseApi + "propietarios.php";
+  let url =
+    config.baseApi +
+    `propietarios.php?id_propietario=${data.id_propietario}&id_veterinaria=${data.id_veterinaria}`;
   fetch(url, requestOptions)
     .then((response) => response.text())
     .then((result) => {
@@ -143,8 +173,10 @@ const EditOwner = (data, callback, errorCallback) => {
       notas: data.notas,
       telefono: data.telefono,
       thumb: 0,
+      id_veterinaria: data.id_veterinaria,
+      planificadas_tarea: data.planificadas_tarea,
     },
-    { id_veterinaria: data.id_veterinaria },
+    {},
   ]);
 
   var requestOptions = {
