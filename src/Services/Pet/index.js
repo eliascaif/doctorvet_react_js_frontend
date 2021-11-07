@@ -786,24 +786,16 @@ const GetPets = (token, id_vet, callback, errorCallback) => {
 const DeletePet = (data, callback, errorCallback) => {
   var myHeaders = new Headers();
   myHeaders.append("Authorization", data.token);
-  myHeaders.append("Content-Type", "application/json");
-
-  var raw = JSON.stringify({
-    id_mascota: data.id_mascota,
-    id_veterinaria: data.id_veterinaria,
-  });
 
   var requestOptions = {
-    method: "POST",
+    method: "DELETE",
     headers: myHeaders,
-    body: raw,
     redirect: "follow",
   };
-
-  fetch(
-    "http://34.95.245.77/android_doctor_vet/api/delete_mascota.php",
-    requestOptions
-  )
+  let url =
+    config.baseApi +
+    `mascotas.php?id_mascota=${data.id_mascota}&id_veterinaria=${data.id_veterinaria}`;
+  fetch(url, requestOptions)
     .then((response) => response.text())
     .then((result) => {
       callback(result);
@@ -834,14 +826,10 @@ const UpdatePet = (token, data, callback, errorcallback) => {
       peso: data.peso,
       deceso: data.deceso,
       thumb: 0,
-    },
-    {
       id_veterinaria: data.id_veterinaria,
-    },
-    {
-      es_principal: 1,
       id_propietario: data.propietarios[0].id,
     },
+    {},
   ]);
 
   var requestOptions = {
@@ -850,11 +838,8 @@ const UpdatePet = (token, data, callback, errorcallback) => {
     body: raw,
     redirect: "follow",
   };
-
-  fetch(
-    "http://34.95.245.77/android_doctor_vet/api/update_mascota.php",
-    requestOptions
-  )
+  let url = config.baseApi + "mascotas.php";
+  fetch(url, requestOptions)
     .then((response) => response.json())
     .then((result) => callback(result))
     .catch((error) => errorcallback(error));
