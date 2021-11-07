@@ -11,8 +11,9 @@ import AddOwner from "../../Containers/AddOwner";
 
 import { GetRace, GetFur, GetSex, GetCharacter } from "../../Services/Pet";
 import { GetRegions } from "../../Services/Regions";
+import SubMenu from "../../Components/Menu/SubMenu";
 
-const Owners = (porps) => {
+const Owners = (props) => {
   const history = useHistory();
 
   const [sesion, setSesion] = useState(null);
@@ -26,6 +27,12 @@ const Owners = (porps) => {
   const [characteres, setCaracteres] = useState(null);
   const [regions, setRegions] = useState(null);
   const [fetching, setFetching] = useState(false);
+
+  useEffect(() => {
+    if (props.options == "create") {
+      handleAddOwner();
+    }
+  }, [props.options]);
 
   useEffect(() => {
     let localSesion = null;
@@ -53,26 +60,26 @@ const Owners = (porps) => {
           setOwners(auxData);
         }
       );
-      // setFetching(true);
-      // GetRace(localSesion.access_token,(data)=>{
-      //     //console.log('razas owners', data)
-      //     setRaces(data);
-      // });
 
-      // GetFur(localSesion.access_token,(data)=>{
-      //     //console.log('fur', data)
-      //     setFurs(data);
-      // });
+      GetRace(localSesion.access_token, (data) => {
+        //console.log('razas owners', data)
+        setRaces(data);
+      });
 
-      // GetSex(localSesion.access_token,(data)=>{
-      //     //console.log('sex', data)
-      //     setSexes(data);
-      // });
+      GetFur(localSesion.access_token, (data) => {
+        //console.log('fur', data)
+        setFurs(data);
+      });
 
-      // GetCharacter(localSesion.access_token,(data)=>{
-      //     //console.log('char', data)
-      //     setCaracteres(data);
-      // });
+      GetSex(localSesion.access_token, (data) => {
+        //console.log('sex', data)
+        setSexes(data);
+      });
+
+      GetCharacter(localSesion.access_token, (data) => {
+        //console.log('char', data)
+        setCaracteres(data);
+      });
       // //console.log('wait regions')
       GetRegions(localSesion.access_token, (data) => {
         //console.log('regions', data)
@@ -153,9 +160,10 @@ const Owners = (porps) => {
           <CircularProgress />
         </div>
       )}
-      <span className="add-owner" onClick={handleAddOwner}>
+      {/* <span className="add-owner" onClick={handleAddOwner}>
         <AddCircleIcon />
-      </span>
+      </span> */}
+      <SubMenu addOwner={handleAddOwner} open={add} />
       {sesion !== null && (
         <AddOwner
           open={add}

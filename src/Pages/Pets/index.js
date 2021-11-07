@@ -14,6 +14,7 @@ import dog from "../../Assets/img/dog-blue.svg";
 import Pet from "../../Components/Pet";
 import AddPet from "../../Containers/AddPet";
 import AddCircleIcon from "@material-ui/icons/AddCircle";
+import SubMenu from "../../Components/Menu/SubMenu";
 
 const Pets = (props) => {
   const history = useHistory();
@@ -27,6 +28,7 @@ const Pets = (props) => {
   const [furs, setFurs] = useState(null);
   const [sexes, setSexes] = useState(null);
   const [characteres, setCaracteres] = useState(null);
+  const [options, setOptions] = useState(null);
 
   useEffect(() => {
     let localSesion = null;
@@ -78,8 +80,15 @@ const Pets = (props) => {
       });
 
       setSesion(localSesion);
+      setOptions(props.match.params.option);
     }
   }, []);
+
+  useEffect(() => {
+    if (options == "create") {
+      handleAddPet();
+    }
+  }, [options]);
 
   const handleAddPet = () => {
     setOpen(!open);
@@ -167,9 +176,10 @@ const Pets = (props) => {
           })}
         </div>
       )}
-      <span className="addpet-btn" onClick={handleAddPet}>
+      {/* <span className="addpet-btn" onClick={handleAddPet}>
         <AddCircleIcon />
-      </span>
+      </span> */}
+      <SubMenu addPet={handleAddPet} open={open} />
       <AddPet open={open} onClose={handleClose} updatePets={updatePets} />
     </div>
   );
