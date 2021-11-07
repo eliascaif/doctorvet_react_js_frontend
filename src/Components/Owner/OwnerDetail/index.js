@@ -11,8 +11,6 @@ import {
   FormControlLabel,
 } from "@material-ui/core";
 import PersonIcon from "@material-ui/icons/Person";
-import CreateIcon from "@material-ui/icons/Create";
-import DeleteIcon from "@material-ui/icons/Delete";
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import BackupIcon from "@material-ui/icons/Backup";
 import dog from "../../../Assets/img/dog-blue.svg";
@@ -31,6 +29,7 @@ import Pet from "../../../Components/Pet";
 //import Dialog from '../../../Components/Dialog';
 
 import "./styles.scss";
+import SubMenu from "../../Menu/SubMenu";
 
 const TextFieldStyles = {
   marginBottom: "1em",
@@ -63,8 +62,10 @@ const OwnerDetail = (props) => {
   const [open, setOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [errorCreate, setErrorCreate] = useState(false);
+  const [closeMenu, setCloseMenu] = useState(false);
 
   const handleOpenNewPet = () => {
+    setCloseMenu(!closeMenu);
     setNewPetOpen(!newPetOpen);
   };
 
@@ -172,11 +173,12 @@ const OwnerDetail = (props) => {
   }
 
   const handleOpen = () => {
+    setCloseMenu(!closeMenu);
     setOpen(!open);
   };
 
   const handleEditOpen = () => {
-    //console.log(editOpen)
+    setCloseMenu(!closeMenu);
     setEditOpen(!editOpen);
   };
 
@@ -192,6 +194,13 @@ const OwnerDetail = (props) => {
   return (
     <Drawer open={props.open}>
       <div className="drawer-content">
+        <SubMenu
+          isOwner
+          edit={handleEditOpen}
+          delete={handleOpen}
+          open={closeMenu}
+          option2={handleOpenNewPet}
+        />
         <div className="header">
           <span onClick={props.onClose} className="close-btn">
             <ArrowBackIcon />
@@ -203,14 +212,14 @@ const OwnerDetail = (props) => {
             <span className="header-name">
               {props.owner !== null ? props.owner.nombre : ""}
             </span>
-            <span className="header-crud">
+            {/* <span className="header-crud">
               <span onClick={handleEditOpen}>
                 <CreateIcon />
               </span>
               <span onClick={handleOpen} className="pointer">
                 <DeleteIcon />
               </span>
-            </span>
+            </span> */}
           </div>
         </div>
         <div className="owner-content">
@@ -298,7 +307,7 @@ const OwnerDetail = (props) => {
                     label="Gestionar suministro planificado como tareas domiciliarias"
                   />
                 </div>
-                <div className="actions-button">
+                {/* <div className="actions-button">
                   <PhoneIcon className="pointer" />
                   <WhatsAppIcon className="wsp pointer" />
                   <WhatsAppIcon className="wsp pointer" />
@@ -307,7 +316,7 @@ const OwnerDetail = (props) => {
                     className="add pointer"
                     onClick={handleOpenNewPet}
                   />
-                </div>
+                </div> */}
               </React.Fragment>
             )}
           </div>
