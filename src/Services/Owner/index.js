@@ -9,40 +9,19 @@ const GetOwners = (token, vet_id, callback) => {
     headers: myHeaders,
     redirect: "follow",
   };
-  //callback([{nombre:'vet 1', email:'asd@asd.dsa', id:'1'}, {nombre:'vet 1', email:'asd@asd.dsa', id:'1'}, {nombre:'vet 1', email:'asd@asd.dsa', id:'1'}])
-  const json = {
-    content: [
-      {
-        id: 7,
-        nombre: "dos",
-        direccion: "dos",
-        id_region: 719,
-        telefono: 3455550,
-        email: "emai@doc.co",
-        notas: "nota",
-        nombre_region: "Argentina",
-        mascotas: [],
-      },
-    ],
-    page: 1,
-    results_per_page: 40,
-    total_results: 0,
-    total_pages: 0,
-  };
-  callback(json);
 
-  //   let url = config.baseApi + "propietarios.php?id_veterinaria=" + vet_id;
-  //   //console.log(url)
-  //   fetch(url, requestOptions)
-  //     .then((response) => {
-  //       return response.json();
-  //     })
-  //     .then((json) => {
-  //       callback(json);
-  //     })
-  //     .catch((error) => {
-  //       console.log(error);
-  //     });
+  let url = config.baseApi + "propietarios.php?id_veterinaria=" + vet_id;
+  //console.log(url)
+  fetch(url, requestOptions)
+    .then((response) => {
+      return response.json();
+    })
+    .then((json) => {
+      callback(json);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
 };
 
 const GetOwner = (token, id, id_veterinaria, callback) => {
@@ -58,36 +37,23 @@ const GetOwner = (token, id, id_veterinaria, callback) => {
   let url =
     config.baseApi +
     `propietarios.php?id_veterinaria=${id_veterinaria}&id_propietario=${id}`;
-  //console.log(url)
-  const data = {
-    id: 7,
-    nombre: "dos",
-    direccion: "dos",
-    id_region: 719,
-    telefono: 3455550,
-    email: "emai@doc.co",
-    notas: "nota",
-    nombre_region: "Argentina",
-    planificadas_tarea: 0,
-    mascotas: [],
-  };
-  callback(data);
-  // fetch(url, requestOptions)
-  //   .then((response) => {
-  //     return response.json();
-  //   })
-  //   .then((json) => {
-  //     callback(json);
-  //   })
-  //   .catch((error) => {
-  //     console.log(error);
-  //   });
+
+  fetch(url, requestOptions)
+    .then((response) => {
+      return response.json();
+    })
+    .then((json) => {
+      callback(json);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
 };
 
 const AddOwner = (data, callback, errorCallback) => {
   var myHeaders = new Headers();
   myHeaders.append("Authorization", data.token);
-  myHeaders.append("Content-Type", "application/json");
+  // myHeaders.append("Content-Type", "application/json");
 
   var raw = JSON.stringify([
     {
@@ -129,12 +95,6 @@ const AddOwner = (data, callback, errorCallback) => {
 const DeleteOwner = (data, callback, errorCallback) => {
   var myHeaders = new Headers();
   myHeaders.append("Authorization", data.token);
-  // myHeaders.append("Content-Type", "application/json");
-
-  // var raw = JSON.stringify({
-  //   id_propietario: data.id_propietario,
-  //   id_veterinaria: data.id_veterinaria,
-  // });
 
   var requestOptions = {
     method: "DELETE",
@@ -160,7 +120,7 @@ const DeleteOwner = (data, callback, errorCallback) => {
 const EditOwner = (data, callback, errorCallback) => {
   var myHeaders = new Headers();
   myHeaders.append("Authorization", data.token);
-  myHeaders.append("Content-Type", "application/json");
+  // myHeaders.append("Content-Type", "application/json");
 
   var raw = JSON.stringify([
     {

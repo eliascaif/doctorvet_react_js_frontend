@@ -2,9 +2,12 @@ import config from "../../Assets/localConfig.json";
 
 const Login = (data, callback, errorCallback) => {
   let url = config.baseApi + "user_login_account.php";
+  var myHeaders = new Headers();
+  //myHeaders.append("Content-Type", "application/json");
+
   fetch(url, {
     method: "POST",
-    headers: {},
+    headers: myHeaders,
     body: JSON.stringify(data),
   })
     .then((response) => {

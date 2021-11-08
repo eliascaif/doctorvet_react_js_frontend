@@ -71,7 +71,6 @@ const AddOwner = (props) => {
         newData.nombre !==
         "" /*&& data.direccion!=='' && data.region!=='' && data.telefono!=='' && data.email!=='' && data.id_regional!=='' && !emailError*/
       ) {
-        debugger;
         setFetching(true);
         AddNewOwner(
           newData,
@@ -165,7 +164,7 @@ const AddOwner = (props) => {
                   value={data.region}
                 >
                   <option value="" />
-                  {props.regions.map((data) => {
+                  {props.regions.content.map((data) => {
                     return (
                       <option key={data.id} value={data.id}>
                         {data.nombre_region}

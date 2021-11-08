@@ -168,7 +168,6 @@ const SetVeterinary = (props) => {
   };
 
   const handleAddVet = () => {
-    debugger;
     //console.log(!validateEmail(data.email));
     setError({ ...error, email: !validateEmail(data.email) });
     if (fetching || status) return;

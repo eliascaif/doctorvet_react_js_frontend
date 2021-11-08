@@ -1,12 +1,11 @@
 import config from "../../Assets/localConfig.json";
 
 const Recovery = (email, callback, callbackError) => {
-  debugger;
   let url = config.baseApi + `user_forgot_account.php?email=${email}`;
   fetch(url, {
     method: "GET",
     headers: {
-      "Content-Type": "application/json",
+      // "Content-Type": "application/json",
     },
     // body: { ...data },
   })

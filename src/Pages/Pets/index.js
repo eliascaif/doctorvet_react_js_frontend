@@ -105,7 +105,7 @@ const Pets = (props) => {
       sesion.access_token,
       sesion.veterinary.id,
       (data) => {
-        let auxData = data.map((n) => {
+        let auxData = data.content.map((n) => {
           if (n.id + "" === id) return { ...n, open: true };
           else return { ...n, open: false };
         });

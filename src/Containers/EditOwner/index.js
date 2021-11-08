@@ -140,7 +140,7 @@ const EditOwner = (props) => {
                   value={data.id_region}
                 >
                   <option value="" />
-                  {props.regions.map((data) => {
+                  {props.regions.content.map((data) => {
                     return (
                       <option key={data.id} value={data.id}>
                         {data.nombre_region}

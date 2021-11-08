@@ -100,7 +100,7 @@ const Owners = (props) => {
       sesion.access_token,
       sesion.x_usuarios_veterinarias.id_veterinaria,
       (data) => {
-        let auxData = data.map((n) => {
+        let auxData = data.content.map((n) => {
           if (n.id + "" === id) return { ...n, open: true };
           else return { ...n, open: false };
         });
@@ -128,12 +128,11 @@ const Owners = (props) => {
 
   return (
     <div className="owners-wrapper">
-      {!fetching ? (
-        //&&
-        // furs !== null &&
-        //races !== null &&
-        //characteres !== null &&
-        //sexes !== null
+      {!fetching &&
+      furs !== null &&
+      races !== null &&
+      characteres !== null &&
+      sexes !== null ? (
         owners.map(({ nombre, email, mascotas, id, open }, index) => {
           return (
             <Owner
