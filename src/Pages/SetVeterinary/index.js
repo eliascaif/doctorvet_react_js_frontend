@@ -187,12 +187,15 @@ const SetVeterinary = (props) => {
           console.log("response ", data);
           if (/^[0-9]*/.test(data)) {
             setStatus(true);
+            data = JSON.parse(data);
             localStorage.setItem(
               "sesion",
               JSON.stringify({
                 ...JSON.parse(localStorage.getItem("sesion")),
                 id_x_usuarios_veterinarias_en_uso: data,
-                x_usuarios_veterinarias: { id_veterinaria: data },
+                x_usuarios_veterinarias: {
+                  id_veterinaria: data.id_veterinaria_deposito,
+                },
               })
             );
             handleLogin();
@@ -366,7 +369,7 @@ pero te comento para que madures la idea y mañana me des tu opinion, en la app 
                     onChange={handleData}
                     name="id_region"
                   >
-                    {regions.map((region) => {
+                    {regions.content.map((region) => {
                       return (
                         <MenuItem
                           value={region.id + "*vet*" + region.nombre_region}
