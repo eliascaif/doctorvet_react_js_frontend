@@ -1,4 +1,5 @@
 import config from "../../Assets/localConfig.json";
+import { Base64ToJson } from "../Utils";
 
 const GetOwners = (token, vet_id, callback) => {
   var myHeaders = new Headers();
@@ -10,7 +11,7 @@ const GetOwners = (token, vet_id, callback) => {
     redirect: "follow",
   };
 
-  let url = config.baseApi + "propietarios.php?id_veterinaria=" + vet_id;
+  let url = config.baseApi + `propietarios.php?id_veterinaria=${vet_id}`;
   //console.log(url)
   fetch(url, requestOptions)
     .then((response) => {

@@ -1,4 +1,5 @@
 import config from "../../Assets/localConfig.json";
+import { Base64ToJson } from "../Utils";
 
 const AddPet = (token, data, callback) => {
   var myHeaders = new Headers();
@@ -47,13 +48,13 @@ const GetRace = (token, callback, errorCallback) => {
     redirect: "follow",
   };
 
-  let url = config.baseApi + "mascotas_razas.php";
+  let url = config.baseApi + "mascotas_razas.php?format=min";
   fetch(url, requestOptions)
     .then((response) => {
-      return response.json();
+      return response.text();
     })
     .then((json) => {
-      callback(json);
+      callback(Base64ToJson(json));
     })
     .catch((error) => {
       if (errorCallback) errorCallback(error);
@@ -71,14 +72,14 @@ const GetFur = (token, callback, errorCallback) => {
     redirect: "follow",
   };
 
-  let url = config.baseApi + "mascotas_pelajes.php";
+  let url = config.baseApi + "mascotas_pelajes.php?format=min";
 
   fetch(url, requestOptions)
     .then((response) => {
-      return response.json();
+      return response.text();
     })
     .then((json) => {
-      callback(json);
+      callback(Base64ToJson(json));
     })
     .catch((error) => {
       if (errorCallback) errorCallback(error);

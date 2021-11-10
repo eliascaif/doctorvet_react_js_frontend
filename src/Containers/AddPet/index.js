@@ -267,7 +267,7 @@ const AddPet = (props) => {
                 value={data.id_raza}
               >
                 <option value="" />
-                {races.content.map((data) => {
+                {races.map((data) => {
                   return (
                     <option key={data.id} value={data.id}>
                       {data.nombre}
@@ -291,7 +291,7 @@ const AddPet = (props) => {
                 value={data.id_pelaje}
               >
                 <option value="" />
-                {furs.content.map((data) => {
+                {furs.map((data) => {
                   return (
                     <option key={data.id} value={data.id}>
                       {data.nombre}

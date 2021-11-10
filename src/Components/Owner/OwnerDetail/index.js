@@ -384,7 +384,7 @@ const OwnerDetail = (props) => {
                     value={data.id_raza}
                   >
                     <option value="" />
-                    {props.races.content.map((data) => {
+                    {props.races.map((data) => {
                       return (
                         <option key={data.id} value={data.id}>
                           {data.nombre}
@@ -408,7 +408,7 @@ const OwnerDetail = (props) => {
                     value={data.id_pelaje}
                   >
                     <option value="" />
-                    {props.furs.content.map((data) => {
+                    {props.furs.map((data) => {
                       return (
                         <option key={data.id} value={data.id}>
                           {data.nombre}
