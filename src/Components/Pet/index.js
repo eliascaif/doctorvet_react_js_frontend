@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Drawer from "../../Components/Drawer";
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
+import { useHistory } from "react-router-dom";
 
 import PropTypes from "prop-types";
 import { makeStyles } from "@material-ui/core/styles";
@@ -15,7 +16,7 @@ import dog from "../../Assets/img/dog-blue.svg";
 
 import Dialog from "../Dialog";
 
-import { DeletePet } from "../../Services/Pet";
+import { DeletePet, GetPet } from "../../Services/Pet";
 
 import EditPet from "../../Containers/EditPet";
 
@@ -69,6 +70,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function Menu(props) {
+  const history = useHistory();
+
   const [state, setState] = React.useState({
     open: false,
     newPetFlag: true,
@@ -80,11 +83,21 @@ export default function Menu(props) {
   const [openEdit, setOpenEdit] = useState(false);
   const [fetching, setFetching] = useState(false);
   const [closeMenu, setCloseMenu] = React.useState(false);
+  const [petData, setPetData] = useState(null);
 
   useEffect(() => {
-    //console.log('props pet', props)
-    setState({ ...state, newPetFlag: props.open });
-  }, []);
+    if (state.open) {
+      GetPet(
+        props.sesion.access_token,
+        props.sesion.id_x_usuarios_veterinarias_en_uso,
+        props.data.id,
+        (data) => {
+          setPetData(data);
+          setState({ ...state, newPetFlag: props.open });
+        }
+      );
+    }
+  }, [state.open]);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -100,7 +113,7 @@ export default function Menu(props) {
 
   const deletePet = () => {
     let dataAux = {
-      id_mascota: props.data.id,
+      id_mascota: petData.id,
       id_veterinaria: props.sesion.veterinary.id,
       token: props.sesion.access_token,
     };
@@ -137,7 +150,7 @@ export default function Menu(props) {
 
   return (
     <div className="pet-wraper">
-      {/*console.log(props.data)*/}
+      {/*console.log(petData)*/}
       <span className="pointer" onClick={handleOpen}>
         {props.children}
       </span>
@@ -147,25 +160,27 @@ export default function Menu(props) {
         onClose={handleClose}
         className="pet-drawer"
       >
-        <div>
-          <div className="pet-header">
+        {petData && (
+          <>
             <div>
-              <ArrowBackIcon
-                style={{ color: "#fff", cursor: "pointer" }}
-                onClick={handleClose}
-              />
-              <div className="pet-data">
-                <span className="dog-img">
-                  <img src={dog} alt="dog" style={{ width: "100%" }} />
-                </span>
-                <span style={PetNameStyle}>{props.data.nombre}</span>
-              </div>
-            </div>
-            {/*<div>
+              <div className="pet-header">
+                <div>
+                  <ArrowBackIcon
+                    style={{ color: "#fff", cursor: "pointer" }}
+                    onClick={handleClose}
+                  />
+                  <div className="pet-data">
+                    <span className="dog-img">
+                      <img src={dog} alt="dog" style={{ width: "100%" }} />
+                    </span>
+                    <span style={PetNameStyle}>{petData.nombre}</span>
+                  </div>
+                </div>
+                {/*<div>
                   <span><DeleteIcon/></span>
                 </div>*/}
 
-            {/* <span className="header-crud">
+                {/* <span className="header-crud">
               <span onClick={handleOpenEdit}>
                 <CreateIcon />
               </span>
@@ -173,131 +188,133 @@ export default function Menu(props) {
                 <DeleteIcon />
               </span>
             </span> */}
-          </div>
+              </div>
 
-          <div className="pet-info">
-            <div className={classes.root}>
-              <AppBar position="static">
-                <Tabs
-                  value={value}
-                  onChange={handleChange}
-                  aria-label="simple tabs example"
-                >
-                  <Tab label="Mascota" {...a11yProps(0)} />
-                  {/*<Tab label="Clínica" {...a11yProps(1)} />
+              <div className="pet-info">
+                <div className={classes.root}>
+                  <AppBar position="static">
+                    <Tabs
+                      value={value}
+                      onChange={handleChange}
+                      aria-label="simple tabs example"
+                    >
+                      <Tab label="Mascota" {...a11yProps(0)} />
+                      {/*<Tab label="Clínica" {...a11yProps(1)} />
                       <Tab label="Suministro" {...a11yProps(2)} />*/}
-                </Tabs>
-              </AppBar>
-              <TabPanel value={value} index={0}>
-                {!fetching ? (
-                  <div className="pet-info-basic">
-                    {props.data.propietarios !== undefined && (
-                      <div>
-                        {props.data.propietarios.map((d) => {
-                          return (
-                            <div key={d.id} className="pet-avatar">
-                              <span className="dog-img">
-                                <PersonIcon />
-                              </span>
-                              <div className="pet-avatar-info">
-                                <span>{d.nombre}</span>
-                                <span>Información</span>
-                              </div>
-                            </div>
-                          );
-                        })}
+                    </Tabs>
+                  </AppBar>
+                  <TabPanel value={value} index={0}>
+                    {!fetching ? (
+                      <div className="pet-info-basic">
+                        {petData.propietarios !== undefined && (
+                          <div>
+                            {petData.propietarios.map((d) => {
+                              return (
+                                <div key={d.id} className="pet-avatar">
+                                  <span className="dog-img">
+                                    <PersonIcon />
+                                  </span>
+                                  <div className="pet-avatar-info">
+                                    <span>{d.nombre}</span>
+                                    <span>Información</span>
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        )}
+                        <div className="pet-details">
+                          <div className="item-detail">
+                            <span className="title">Nombre</span>
+                            <span>{petData.nombre}</span>
+                          </div>
+                          <div className="item-detail">
+                            <span className="title">Raza</span>
+                            <span>{petData.nombre_raza}</span>
+                          </div>
+                          <div className="item-detail">
+                            <span className="title">Pelaje</span>
+                            <span>{petData.nombre_pelaje}</span>
+                          </div>
+                          <div className="item-detail">
+                            <span className="title">Sexo</span>
+                            <span>{petData.nombre_sexo}</span>
+                          </div>
+                          <div className="item-detail">
+                            <span className="title">Caracter</span>
+                            <span>{petData.nombre_caracter}</span>
+                          </div>
+                          <div className="item-detail">
+                            <span className="title">Nacimiento</span>
+                            <span>{petData.nacimiento}</span>
+                          </div>
+                          <div className="item-detail">
+                            <span className="title">Peso</span>
+                            <span>{petData.peso}</span>
+                          </div>
+                          <div className="item-detail">
+                            <span className="title">Chip</span>
+                            <span>{petData.chip}</span>
+                          </div>
+                          <div className="item-detail">
+                            <span className="title">Notas</span>
+                            <span>{petData.notas}</span>
+                          </div>
+
+                          <div className="item-detail item-detail-deseso">
+                            <Checkbox
+                              checked={petData.deceso + "" === "1"}
+                              name="deceso"
+                              disabled={true}
+                            />
+                            <span>Deceso</span>
+                          </div>
+                        </div>
                       </div>
+                    ) : (
+                      <span className="spiner-container">
+                        <CircularProgress />
+                      </span>
                     )}
-                    <div className="pet-details">
-                      <div className="item-detail">
-                        <span className="title">Nombre</span>
-                        <span>{props.data.nombre}</span>
-                      </div>
-                      <div className="item-detail">
-                        <span className="title">Raza</span>
-                        <span>{props.data.nombre_raza}</span>
-                      </div>
-                      <div className="item-detail">
-                        <span className="title">Pelaje</span>
-                        <span>{props.data.nombre_pelaje}</span>
-                      </div>
-                      <div className="item-detail">
-                        <span className="title">Sexo</span>
-                        <span>{props.data.nombre_sexo}</span>
-                      </div>
-                      <div className="item-detail">
-                        <span className="title">Caracter</span>
-                        <span>{props.data.nombre_caracter}</span>
-                      </div>
-                      <div className="item-detail">
-                        <span className="title">Nacimiento</span>
-                        <span>{props.data.nacimiento}</span>
-                      </div>
-                      <div className="item-detail">
-                        <span className="title">Peso</span>
-                        <span>{props.data.peso}</span>
-                      </div>
-                      <div className="item-detail">
-                        <span className="title">Chip</span>
-                        <span>{props.data.chip}</span>
-                      </div>
-                      <div className="item-detail">
-                        <span className="title">Notas</span>
-                        <span>{props.data.notas}</span>
-                      </div>
-
-                      <div className="item-detail item-detail-deseso">
-                        <Checkbox
-                          checked={props.data.deceso + "" === "1"}
-                          name="deceso"
-                          disabled={true}
-                        />
-                        <span>Deceso</span>
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <span className="spiner-container">
-                    <CircularProgress />
-                  </span>
-                )}
-              </TabPanel>
-              <TabPanel value={value} index={1}>
-                Item Two
-              </TabPanel>
-              <TabPanel value={value} index={2}>
-                Item Three
-              </TabPanel>
+                  </TabPanel>
+                  <TabPanel value={value} index={1}>
+                    Item Two
+                  </TabPanel>
+                  <TabPanel value={value} index={2}>
+                    Item Three
+                  </TabPanel>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-        <Dialog
-          open={openDialog && !fetching}
-          message="¿Eliminar?"
-          handleClose={handleOpenDialog}
-          okText="OK"
-          CloseText="CANCELAR"
-          handleOk={deletePet}
-        />
+            <Dialog
+              open={openDialog && !fetching}
+              message="¿Eliminar?"
+              handleClose={handleOpenDialog}
+              okText="OK"
+              CloseText="CANCELAR"
+              handleOk={deletePet}
+            />
 
-        <SubMenu
-          isPets
-          edit={handleOpenEdit}
-          delete={handleOpenDialog}
-          open={closeMenu}
-        />
-        <EditPet
-          open={openEdit}
-          data={props.data}
-          onClose={handleOpenEdit}
-          races={props.races}
-          furs={props.furs}
-          sexes={props.sexes}
-          characteres={props.characteres}
-          sesion={props.sesion}
-          onUpdate={handleUpdate}
-          id_propietario={props.id_propietario}
-        />
+            <SubMenu
+              isPets
+              edit={handleOpenEdit}
+              delete={handleOpenDialog}
+              open={closeMenu}
+            />
+            <EditPet
+              open={openEdit}
+              data={petData}
+              onClose={handleOpenEdit}
+              races={props.races}
+              furs={props.furs}
+              sexes={props.sexes}
+              characteres={props.characteres}
+              sesion={props.sesion}
+              onUpdate={handleUpdate}
+              id_propietario={props.id_propietario}
+            />
+          </>
+        )}
       </Drawer>
     </div>
   );

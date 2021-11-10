@@ -181,9 +181,34 @@ const GetPets = (token, id_vet, callback, errorCallback) => {
       return response.text();
     })
     .then((json) => {
-      console.log("**********************");
-      console.log(Base64ToJson(json));
       callback(Base64ToJson(json));
+    })
+    .catch((error) => {
+      if (errorCallback) errorCallback(error);
+      //console.log(error);
+    });
+};
+
+const GetPet = (token, id_vet, idPet, callback, errorCallback) => {
+  var myHeaders = new Headers();
+  myHeaders.append("Authorization", token);
+
+  var requestOptions = {
+    method: "GET",
+    headers: myHeaders,
+    redirect: "follow",
+  };
+
+  let url =
+    config.baseApi +
+    `mascotas.php?id_veterinaria=${id_vet}&id_mascota=${idPet}`;
+
+  fetch(url, requestOptions)
+    .then((response) => {
+      return response.json();
+    })
+    .then((json) => {
+      callback(json);
     })
     .catch((error) => {
       if (errorCallback) errorCallback(error);
@@ -260,6 +285,7 @@ export {
   GetCharacter,
   AddPet,
   GetPets,
+  GetPet,
   DeletePet,
   UpdatePet,
   GetPetsMin,

@@ -21,7 +21,7 @@ const Owner = (props) => {
   const [fetching, setFetching] = useState(false);
 
   useEffect(() => {
-    //console.log('props owner', props)
+    if (!open) return;
     let localSesion = null;
     try {
       localSesion = JSON.parse(localStorage.getItem("sesion"));
@@ -45,7 +45,7 @@ const Owner = (props) => {
       );
       setNewOwnerFlag(props.open);
     }
-  }, []);
+  }, [open]);
 
   const handleOpen = () => {
     if (!newOwnerFlag) setOpen(!open);
