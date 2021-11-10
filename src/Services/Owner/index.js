@@ -1,6 +1,31 @@
 import config from "../../Assets/localConfig.json";
 import { Base64ToJson } from "../Utils";
 
+const GetOwnersMin = (token, vet_id, callback) => {
+  var myHeaders = new Headers();
+  myHeaders.append("Authorization", token);
+
+  var requestOptions = {
+    method: "GET",
+    headers: myHeaders,
+    redirect: "follow",
+  };
+
+  let url =
+    config.baseApi + `propietarios.php?id_veterinaria=${vet_id}&format=MIN`;
+  //console.log(url)
+  fetch(url, requestOptions)
+    .then((response) => {
+      return response.text();
+    })
+    .then((json) => {
+      callback(Base64ToJson(json));
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+};
+
 const GetOwners = (token, vet_id, callback) => {
   var myHeaders = new Headers();
   myHeaders.append("Authorization", token);
@@ -11,14 +36,16 @@ const GetOwners = (token, vet_id, callback) => {
     redirect: "follow",
   };
 
-  let url = config.baseApi + `propietarios.php?id_veterinaria=${vet_id}`;
+  let url =
+    config.baseApi +
+    `propietarios.php?id_veterinaria=${vet_id}&recientes=1&format=MIN`;
   //console.log(url)
   fetch(url, requestOptions)
     .then((response) => {
-      return response.json();
+      return response.text();
     })
     .then((json) => {
-      callback(json);
+      callback(Base64ToJson(json));
     })
     .catch((error) => {
       console.log(error);
@@ -162,4 +189,4 @@ const EditOwner = (data, callback, errorCallback) => {
     });
 };
 
-export { GetOwners, GetOwner, AddOwner, DeleteOwner, EditOwner };
+export { GetOwners, GetOwner, AddOwner, DeleteOwner, EditOwner, GetOwnersMin };

@@ -170,13 +170,13 @@ const EditOwner = (props) => {
                   <span className="fix-here">Por favor corrige aqui</span>
                 )}
               </span>
-              <TextField
+              {/* <TextField
                 label="Identificación regional"
                 name="identificacion_regional"
                 style={TextFieldStyles}
                 onChange={handleData}
                 value={data.identificacion_regional}
-              />
+              /> */}
               <TextField
                 label="Notas"
                 name="notas"

@@ -3,7 +3,7 @@ import Drawer from "../../Components/Drawer";
 import Dialog from "../../Components/Dialog";
 import { GetRace, GetFur, GetSex, GetCharacter } from "../../Services/Pet";
 import { AddPet as AddService } from "../../Services/Pet";
-import { GetOwners } from "../../Services/Owner";
+import { GetOwnersMin } from "../../Services/Owner";
 import { useHistory } from "react-router-dom";
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import BackupIcon from "@material-ui/icons/Backup";
@@ -91,7 +91,7 @@ const AddPet = (props) => {
         setCaracteres(data);
       });
 
-      GetOwners(
+      GetOwnersMin(
         localSesion.access_token,
         localSesion.x_usuarios_veterinarias.id_veterinaria,
         (data) => {
@@ -235,7 +235,7 @@ const AddPet = (props) => {
                 value={data.id_propietario}
               >
                 <option value="" />
-                {owners.content.map((data) => {
+                {owners.map((data) => {
                   return (
                     <option key={data.id} value={data.id}>
                       {data.nombre}

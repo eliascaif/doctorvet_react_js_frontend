@@ -1,6 +1,33 @@
 import config from "../../Assets/localConfig.json";
 import { Base64ToJson } from "../Utils";
 
+const GetPetsMin = (token, id_vet, callback, errorCallback) => {
+  var myHeaders = new Headers();
+  myHeaders.append("Authorization", token);
+
+  var requestOptions = {
+    method: "GET",
+    headers: myHeaders,
+    redirect: "follow",
+  };
+
+  let url =
+    config.baseApi +
+    `mascotas.php?id_veterinaria=${id_vet}&recientes=1&format=MIN`;
+
+  fetch(url, requestOptions)
+    .then((response) => {
+      return response.text();
+    })
+    .then((json) => {
+      callback(Base64ToJson(json));
+    })
+    .catch((error) => {
+      if (errorCallback) errorCallback(error);
+      //console.log(error);
+    });
+};
+
 const AddPet = (token, data, callback) => {
   var myHeaders = new Headers();
   myHeaders.append("Authorization", token);
@@ -145,14 +172,18 @@ const GetPets = (token, id_vet, callback, errorCallback) => {
     redirect: "follow",
   };
 
-  let url = config.baseApi + "mascotas.php?id_veterinaria=" + id_vet;
+  let url =
+    config.baseApi +
+    `mascotas.php?id_veterinaria=${id_vet}&recientes=1&format=MIN`;
 
   fetch(url, requestOptions)
     .then((response) => {
-      return response.json();
+      return response.text();
     })
     .then((json) => {
-      callback(json);
+      console.log("**********************");
+      console.log(Base64ToJson(json));
+      callback(Base64ToJson(json));
     })
     .catch((error) => {
       if (errorCallback) errorCallback(error);
@@ -231,4 +262,5 @@ export {
   GetPets,
   DeletePet,
   UpdatePet,
+  GetPetsMin,
 };

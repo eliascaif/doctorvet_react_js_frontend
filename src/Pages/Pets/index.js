@@ -47,7 +47,7 @@ const Pets = (props) => {
         localSesion.access_token,
         localSesion.veterinary.id,
         (data) => {
-          let auxData = data.content.map((n) => {
+          let auxData = data.map((n) => {
             return { ...n, open: false };
           });
           console.log(auxData);
@@ -105,7 +105,7 @@ const Pets = (props) => {
       sesion.access_token,
       sesion.veterinary.id,
       (data) => {
-        let auxData = data.content.map((n) => {
+        let auxData = data.map((n) => {
           if (n.id + "" === id) return { ...n, open: true };
           else return { ...n, open: false };
         });

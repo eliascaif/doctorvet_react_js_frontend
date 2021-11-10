@@ -54,7 +54,7 @@ const Owners = (props) => {
         (data) => {
           //console.log(data)
           // setFetching(false);
-          let auxData = data.content.map((n) => {
+          let auxData = data.map((n) => {
             return { ...n, open: false };
           });
           setOwners(auxData);
@@ -100,7 +100,7 @@ const Owners = (props) => {
       sesion.access_token,
       sesion.x_usuarios_veterinarias.id_veterinaria,
       (data) => {
-        let auxData = data.content.map((n) => {
+        let auxData = data.map((n) => {
           if (n.id + "" === id) return { ...n, open: true };
           else return { ...n, open: false };
         });
