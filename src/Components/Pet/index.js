@@ -87,17 +87,23 @@ export default function Menu(props) {
 
   useEffect(() => {
     if (state.open) {
-      GetPet(
-        props.sesion.access_token,
-        props.sesion.id_x_usuarios_veterinarias_en_uso,
-        props.data.id,
-        (data) => {
-          setPetData(data);
-          setState({ ...state, newPetFlag: props.open });
-        }
-      );
+      getData();
     }
   }, [state.open]);
+
+  const getData = () => {
+    setFetching(true);
+    GetPet(
+      props.sesion.access_token,
+      props.sesion.id_x_usuarios_veterinarias_en_uso,
+      props.data.id,
+      (data) => {
+        setPetData(data);
+        setState({ ...state, newPetFlag: props.open });
+        setFetching(false);
+      }
+    );
+  };
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -146,6 +152,7 @@ export default function Menu(props) {
   const handleUpdate = (resp) => {
     props.onUpdate(resp);
     handleOpenEdit();
+    getData();
   };
 
   return (
