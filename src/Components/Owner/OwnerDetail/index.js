@@ -279,12 +279,12 @@ const OwnerDetail = (props) => {
                   <p className="title">Email</p>
                   <p className="description">{props.owner.email}</p>
                 </div>
-                <div className="item-list">
+                {/* <div className="item-list">
                   <p className="title">Identificación regional</p>
                   <p className="description">
                     {props.owner.identificacion_regional}
                   </p>
-                </div>
+                </div> */}
                 <div className="item-list">
                   <p className="title">Notas</p>
                   <p className="description">{props.owner.notas}</p>

@@ -25,15 +25,15 @@ const TextFieldStyles = {
 
 const AddOwner = (props) => {
   const [data, setData] = useState({
-    nombre: "",
-    direccion: "",
-    region: "",
-    telefono: "",
-    email: "",
+    nombre: null,
+    direccion: null,
+    region: null,
+    telefono: null,
+    email: null,
     //id_regional:null,
-    notas: "",
-    token: "",
-    id_veterinaria: "",
+    notas: null,
+    token: null,
+    id_veterinaria: null,
     planificadas_tarea: false,
   });
 

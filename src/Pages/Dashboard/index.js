@@ -39,6 +39,7 @@ const Dahsboard = (props) => {
       return;
     }
     if (localSesion.access_token !== undefined) {
+      //debugger;
       GetVeterinary(
         localSesion.x_usuarios_veterinarias.id_veterinaria,
         localSesion.access_token,

@@ -184,8 +184,9 @@ const SetVeterinary = (props) => {
         sesion.id,
         sesion.access_token,
         (data) => {
-          console.log("response ", data);
+          // console.log("response CreateVet", data);
           if (/^[0-9]*/.test(data)) {
+            //debugger;
             setStatus(true);
             data = JSON.parse(data);
             localStorage.setItem(
