@@ -95,7 +95,7 @@ export default function Menu(props) {
     setFetching(true);
     GetPet(
       props.sesion.access_token,
-      props.sesion.id_x_usuarios_veterinarias_en_uso,
+      props.sesion.x_usuarios_veterinarias.id_veterinaria,
       props.data.id,
       (data) => {
         setPetData(data);
@@ -167,7 +167,7 @@ export default function Menu(props) {
         onClose={handleClose}
         className="pet-drawer"
       >
-        {petData && (
+        {petData ? (
           <>
             <div>
               <div className="pet-header">
@@ -321,6 +321,10 @@ export default function Menu(props) {
               id_propietario={props.id_propietario}
             />
           </>
+        ) : (
+          <span className="spiner-container">
+            <CircularProgress />
+          </span>
         )}
       </Drawer>
     </div>
